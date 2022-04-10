@@ -12,6 +12,7 @@ const login = (req, res) => {
       auth: true,
       token: token
     })
+    return
   }
   res.status(500).json({
     message: "login invalido"

@@ -1,5 +1,4 @@
 const jwtService = require('jsonwebtoken')
-const { userInfo } = require('os')
 const validateJwt = (req, res, next) => {
   const secret = process.env.JWT_SECRET
   

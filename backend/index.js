@@ -22,8 +22,7 @@ app.use('/', login)
 
 app.get('/', validateJwt, async (req, res) => {
   const db = await pool.query('SELECT NOW()')
-  await pool.end()
-  res.send(db)
+
 })
 
 app.listen(PORT, () => {
