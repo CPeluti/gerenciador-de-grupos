@@ -8,6 +8,10 @@ const {DaoParticipantes} = require('./dao/daoParticipantes')
 const daoParticipantes = new DaoParticipantes()
 const {DaoUsuarios} = require('./dao/DaoUsuarios')
 const daoUsuarios = new DaoUsuarios()
+const {DaoMensagens} = require('./dao/DaoMensagens')
+const daoMensagens = new DaoMensagens()
+const {DaoGrupos} = require('./dao/DaoGrupos')
+const daoGrupos = new DaoGrupos()
 // Routes
 const login = require('./routes/login')
 const importRoute = require('./routes/import')
@@ -26,6 +30,8 @@ daoMaterias.createTable()
 daoTurmas.createTable()
 daoParticipantes.createTable()
 daoUsuarios.createTable()
+daoMensagens.createTable()
+daoGrupos.createTable()
 
 // VarEnvs
 const PORT = process.env.PORT

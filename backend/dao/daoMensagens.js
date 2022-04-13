@@ -1,9 +1,9 @@
 const {pool} = require('../postgres')
 const format = require('pg-format')
 
-class DaoGrupos {
+class DaoMensagens {
   constructor () {
-    this.tabela = 'grupos'
+    this.tabela = 'mensagens'
     this.bd = pool
   }
   createTable() {
@@ -126,4 +126,4 @@ class DaoGrupos {
     })
   }
 }
-module.exports = {DaoTurmas}
+module.exports = {DaoMensagens}

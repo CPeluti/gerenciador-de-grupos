@@ -9,7 +9,6 @@ class DaoGrupos {
   createTable() {
     return new Promise( async (resolve, reject) => {
       try {
-        //TODO: arrumar tamanho do codigo
         const { rows } = await this.bd.query(`
           CREATE TABLE IF NOT EXISTS ${process.env.DB_SCHEMA}.${this.tabela} (
             id SERIAL PRIMARY KEY,
@@ -127,4 +126,4 @@ class DaoGrupos {
     })
   }
 }
-module.exports = {DaoTurmas}
+module.exports = {DaoGrupos}
