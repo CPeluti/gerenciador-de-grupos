@@ -1,7 +1,13 @@
 require('dotenv').config()
 //Dao
-const {DaoMateria} = require('./dao/daoMateria')
-const daoMateria = new DaoMateria()
+const {DaoMateria} = require('./dao/daoMaterias')
+const daoMaterias = new DaoMateria()
+const {DaoTurmas} = require('./dao/daoTurmas')
+const daoTurmas = new DaoTurmas()
+const {DaoParticipantes} = require('./dao/daoParticipantes')
+const daoParticipantes = new DaoParticipantes()
+const {DaoUsuarios} = require('./dao/DaoUsuarios')
+const daoUsuarios = new DaoUsuarios()
 // Routes
 const login = require('./routes/login')
 const importRoute = require('./routes/import')
@@ -16,7 +22,10 @@ app.use(express.json())
 
 // DB create tables
 
-daoMateria.createTable()
+daoMaterias.createTable()
+daoTurmas.createTable()
+daoParticipantes.createTable()
+daoUsuarios.createTable()
 
 // VarEnvs
 const PORT = process.env.PORT
