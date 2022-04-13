@@ -1,9 +1,9 @@
 const {pool} = require('../postgres')
 const format = require('pg-format')
 
-class DaoTurmas {
+class DaoParticipantes {
   constructor () {
-    this.tabela = 'turmas'
+    this.tabela = 'participantes'
     this.bd = pool
   }
   createTable() {
@@ -12,14 +12,9 @@ class DaoTurmas {
         //TODO: arrumar tamanho do codigo
         const { rows } = await this.bd.query(`
           CREATE TABLE IF NOT EXISTS ${process.env.DB_SCHEMA}.${this.tabela} (
-            id SERIAL PRIMARY KEY,
-            codigo VARCHAR(15) NOT NULL,
-            semestre VARCHAR(8) NOT NULL,
-            horario VARCHAR(255) NOT NULL,
-            codigo_materia varchar(15) NOT NULL,
-            CONSTRAINT fk_codigo_materia
-              FOREIGN KEY(codigo_materia)
-                REFERENCES materia(codigo)
+            matricula VARCHAR(15) PRIMARY KEY,
+            nome VARCHAR(60) NOT NULL,
+            email VARCHAR(255) NOT NULL
           );
         `)
         resolve(rows[0])
@@ -28,15 +23,15 @@ class DaoTurmas {
       }
     })
   }
-  create (turma) {
+  create (participante) {
     return new Promise( async (resolve, reject) => {
       try {
         const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (codigo, semestre, horario, codigo_materia)
-          VALUES ($1, $2, $3, $4)
+          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (matricula, nome, email)
+          VALUES ($1, $2, $3)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [turma.codigo, turma.semestre, turma.horario, turma.codigo_materia])
+        `, [participante.matricula, participante.nome, participante.email])
         resolve(rows[0])
       } catch (error) {
         reject(error)
@@ -123,4 +118,4 @@ class DaoTurmas {
     })
   }
 }
-module.exports = {DaoTurmas}
+module.exports = {DaoParticipantes}
