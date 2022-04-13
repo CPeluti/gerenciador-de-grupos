@@ -1,4 +1,4 @@
-const {DaoMateria} = require('../dao/daoMateria.js')
+const {DaoMateria} = require('../dao/daoMaterias.js')
 const dao = new DaoMateria()
 const importController = async (req, res) => {
   const materias = req.body.materias

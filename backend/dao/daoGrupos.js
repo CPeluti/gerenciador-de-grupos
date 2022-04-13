@@ -1,9 +1,9 @@
 const {pool} = require('../postgres')
 const format = require('pg-format')
 
-class DaoUsuarios {
+class DaoGrupos {
   constructor () {
-    this.tabela = 'usuarios'
+    this.tabela = 'grupos'
     this.bd = pool
   }
   createTable() {
@@ -13,13 +13,17 @@ class DaoUsuarios {
         const { rows } = await this.bd.query(`
           CREATE TABLE IF NOT EXISTS ${process.env.DB_SCHEMA}.${this.tabela} (
             id SERIAL PRIMARY KEY,
-            usuario VARCHAR(60) NOT NULL,
-            senha varchar(255) NOT NULL,
-            salt varchar(255) NOT NULL,
-            matricula_participante VARCHAR(15) NOT NULL,
-            CONSTRAINT fk_matricula_participante
-              FOREIGN KEY(matricula_participante)
-                REFERENCES participantes(matricula)
+            criado_em TIMESTAMP NOT NULL,
+            modificado_em TIMESTAMP NOT NULL,
+            nome VARCHAR(255) NOT NULL,
+            criado_por INT NOT NULL,
+            turma_id INT NOT NULL,
+            CONSTRAINT fk_criado_por
+              FOREIGN KEY(criado_por)
+                REFERENCES usuarios(id)
+            CONSTRAINT fk_turma_id
+              FOREIGN KEY(turma_id)
+                REFERENCES turmas(id)
           );
         `)
         resolve(rows[0])
@@ -28,15 +32,15 @@ class DaoUsuarios {
       }
     })
   }
-  create (usuario) {
+  create (grupo) {
     return new Promise( async (resolve, reject) => {
       try {
         const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (usuario,senha,salt,matricula_participante)
-          VALUES ($1, $2, $3, $4)
+          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (criado_em, modificado_em, nome, criado_por, turma_id)
+          VALUES ($1, $2, $3, $4, $5)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [usuario.usuario, usuario.senha, usuario.salt, usuario.matricula_participante])
+        `, [grupo.criado_em, grupo.modificado_em, grupo.nome, grupo.criado_por, grupo.turma_id])
         resolve(rows[0])
       } catch (error) {
         reject(error)
