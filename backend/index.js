@@ -1,5 +1,7 @@
 require('dotenv').config()
-
+//Dao
+const {DaoMateria} = require('./dao/daoMateria')
+const daoMateria = new DaoMateria()
 // Routes
 const login = require('./routes/login')
 const importRoute = require('./routes/import')
@@ -11,6 +13,10 @@ const {validateJwt} = require('./middlewares/jwtValidation')
 const express = require('express')
 const app = express()
 app.use(express.json())
+
+// DB create tables
+
+daoMateria.createTable()
 
 // VarEnvs
 const PORT = process.env.PORT

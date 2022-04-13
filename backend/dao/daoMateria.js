@@ -1,17 +1,17 @@
-class Materia {
-  constructor (bd, materia={}) {
-    this.bd = bd
-    if(materia!=={}) {
-      this.nome = materia.nome
-      this.codigo = materia.codigo
-    }
+const {pool} = require('../postgres')
+const format = require('pg-format')
+
+class DaoMateria {
+  constructor () {
+    this.tabela = 'materia'
+    this.bd = pool
   }
   createTable() {
     return new Promise( async (resolve, reject) => {
       try {
         //TODO: arrumar tamanho do codigo
         const { rows } = await this.bd.query(`
-          CREATE TABLE IF NOT EXISTS ${process.env.DB_SCHEMA}.materia (
+          CREATE TABLE IF NOT EXISTS ${process.env.DB_SCHEMA}.${this.tabela} (
             codigo VARCHAR(15) PRIMARY KEY,
             nome VARCHAR(255) NOT NULL
           );
@@ -22,16 +22,15 @@ class Materia {
       }
     })
   }
-  create () {
+  create (materia) {
     return new Promise( async (resolve, reject) => {
       try {
-        await this.createTable()
         const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.materia (codigo, nome)
+          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (codigo, nome)
           VALUES ($1, $2)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [this.codigo, this.nome])
+        `, [materia.codigo, materia.nome])
         resolve(rows[0])
       } catch (error) {
         reject(error)
@@ -40,19 +39,20 @@ class Materia {
   }
   findBy (filtros) {
     return new Promise( async (resolve, reject) => {
-      let filtro = []
       let binds = []
       let contador = 1
       Object.keys(filtros).forEach(key => {
-        filtro.push(filtros[key])
-        binds.push(`${key} = $${contador}`)
+        let sqlParcial = `%I = `
+        sqlParcial = format(sqlParcial, key)
+        binds.push(sqlParcial)
+      })
+      binds = binds.map(item => {
+        const condicional = item+`$${contador}`
         contador++
+        return condicional
       })
       try {
-        await this.createTable()
-        const { rows } = await this.bd.query(`
-          SELECT * FROM ${process.env.DB_SCHEMA}.materia WHERE ${binds.join(' AND ')};
-        `, filtro)
+        const { rows } = await this.bd.query(`SELECT * FROM ${process.env.DB_SCHEMA}.${this.tabela} WHERE ${binds.join(' AND ')};`, [...Object.values(filtros)])
         resolve(rows)
       } catch (error) {
         reject(error)
@@ -67,23 +67,34 @@ class Materia {
       let bindsDados = []
       let contador = 1
       Object.keys(dados).forEach(key => {
-        bindsDados.push(`${key} = $${contador}`)
+        let sqlParcial = `%I = `
+        sqlParcial = format(sqlParcial, key)
+        bindsDados.push(sqlParcial)
+      })
+      bindsDados = bindsDados.map(item => {
+        const condicional = item+`$${contador}`
         contador++
+        return condicional
       })
       let bindsFiltros = []
       Object.keys(filtro).forEach(key => {
-        bindsFiltros.push(`${key} = $${contador}`)
+        let sqlParcial = `%I = `
+        sqlParcial = format(sqlParcial, key)
+        bindsFiltros.push(sqlParcial)
+      })
+      bindsFiltros = bindsFiltros.map(item => {
+        const condicional = item+`$${contador}`
         contador++
+        return condicional
       })
       try {
-        await this.createTable()
         const { rows } = await this.bd.query(`
-          UPDATE ${process.env.DB_SCHEMA}.materia
+          UPDATE ${process.env.DB_SCHEMA}.${this.tabela}
           SET ${bindsDados.join(', ')}
           WHERE ${bindsFiltros.join(' AND ')}
           RETURNING *;
         `, [...Object.values(dados), ...Object.values(filtro)])
-        resolve(rows[0])
+        resolve(rows)
       } catch (error) {
         reject(error)
       }
@@ -91,10 +102,12 @@ class Materia {
   }
   delete (id) {
     return new Promise( async (resolve, reject) => {
+      if(!id){
+        reject(new Error('Filtro não informado'))
+      }
       try {
-        await this.createTable()
         const { rows } = await this.bd.query(`
-         DELETE FROM ${process.env.DB_SCHEMA}.materia
+         DELETE FROM ${process.env.DB_SCHEMA}.${this.tabela}
          WHERE CODIGO = $1
         `, [id])
         resolve(rows[0])
@@ -104,4 +117,4 @@ class Materia {
     })
   }
 }
-module.exports = Materia
+module.exports = {DaoMateria}

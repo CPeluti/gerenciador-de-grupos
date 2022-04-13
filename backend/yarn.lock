@@ -863,6 +863,11 @@
   "resolved" "https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-2.5.0.tgz"
   "version" "2.5.0"
 
+"pg-format@^1.0.4":
+  "integrity" "sha1-J3NCNsKtP05QZJFaWTNOIAQKgo4="
+  "resolved" "https://registry.npmjs.org/pg-format/-/pg-format-1.0.4.tgz"
+  "version" "1.0.4"
+
 "pg-int8@1.0.1":
   "integrity" "sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw=="
   "resolved" "https://registry.npmjs.org/pg-int8/-/pg-int8-1.0.1.tgz"

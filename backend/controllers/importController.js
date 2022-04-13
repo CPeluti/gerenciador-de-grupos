@@ -1,12 +1,11 @@
-const Materia = require('../models/Materia')
-const postgres = require('../dao/postgres')
+const {DaoMateria} = require('../dao/daoMateria.js')
+const dao = new DaoMateria()
 const importController = async (req, res) => {
   const materias = req.body.materias
   let materiasCriadas = []
   for (const element of materias) {
-    const model = new Materia(postgres, element)
     try {
-      const materia = await model.create()
+      const materia = await dao.create(element)
       materiasCriadas.push(materia)
     } catch (error) {
       res.status(500).json({message:"Erro ao criar materia", error: error})
