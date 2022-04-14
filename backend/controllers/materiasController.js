@@ -1,13 +1,12 @@
-const Materia = require('../models/Materia')
-const postgres = require('../dao/postgres')
+const {DaoMaterias} = require('../daos/daoMaterias')
+const dao = new DaoMaterias()
 
 const materiasCreate = async (req, res) => {
   const materias = req.body.materias
   let materiasCriadas = []
   for (const element of materias) {
-    const model = new Materia(postgres, element)
     try {
-      const materia = await model.create()
+      const materia = await dao.create(element)
       materiasCriadas.push(materia)
     } catch (error) {
       res.status(500).json({message:"Erro ao criar materia", error: error})
@@ -20,9 +19,9 @@ const materiasCreate = async (req, res) => {
 
 const materiasFind = async (req, res) => {
   const params = req.query
-  const model = new Materia(postgres)
   try{
-    const materias = await model.findBy(params)
+    console.log(params)
+    const materias = await dao.findBy(params)
     res.status(200).json(materias)
   } catch (error) {
     res.status(500).json({message:"Falha ao buscar registro", error: error})
@@ -35,9 +34,8 @@ const materiasPatch = async (req, res) => {
     res.status(500).json({message:"Somente um registro por vez"})
   }
   const filtro = {codigo: req.params.id}
-  const model = new Materia(postgres)
   try{
-    const materias = await model.update(filtro, dados)
+    const materias = await dao.update(filtro, dados)
     res.status(200).json(materias)
   } catch (error) {
     res.status(500).json({message:"Falha ao atualizar registro", error: error})
@@ -46,10 +44,9 @@ const materiasPatch = async (req, res) => {
 
 const materiasDelete = async (req, res) => {
   const id = req.params.id
-  const model = new Materia(postgres)
   try{
-    const materias = await model.delete(id)
-    res.status(200).json({message:"Registro deletado com sucesso"})
+    const materias = await dao.delete(id)
+    res.status(200).json({message:"Registro deletado com sucesso", materia: materias})
   } catch (error){
     res.status(500).json({message:"Falha ao deletar registro", error: error})
   }
