@@ -1,5 +1,5 @@
-const {DaoMateria} = require('../dao/daoMaterias')
-const dao = new DaoMateria()
+const {DaoMaterias} = require('../dao/daoMaterias')
+const dao = new DaoMaterias()
 
 const materiasCreate = async (req, res) => {
   const materias = req.body.materias

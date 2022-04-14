@@ -19,10 +19,10 @@ class DaoGrupos {
             turma_id INT NOT NULL,
             CONSTRAINT fk_criado_por
               FOREIGN KEY(criado_por)
-                REFERENCES usuarios(id)
+                REFERENCES ${process.env.DB_SCHEMA}.usuarios(id),
             CONSTRAINT fk_turma_id
               FOREIGN KEY(turma_id)
-                REFERENCES turmas(id)
+                REFERENCES ${process.env.DB_SCHEMA}.turmas(id)
           );
         `)
         resolve(rows[0])

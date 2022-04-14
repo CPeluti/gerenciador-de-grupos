@@ -1,9 +1,9 @@
 const {pool} = require('../postgres')
 const format = require('pg-format')
 
-class DaoRelacionamentoTurmasParticipantes {
+class DaoRelacionamentoUsuariosGrupos {
   constructor () {
-    this.tabela = 'turmas_participantes'
+    this.tabela = 'usuarios_grupos'
     this.bd = pool
   }
   createTable() {
@@ -16,10 +16,10 @@ class DaoRelacionamentoTurmasParticipantes {
             id_grupo INT NOT NULL,
             CONSTRAINT fk_id_usuario
               FOREIGN KEY(id_usuario)
-                REFERENCES usuarios(id)
+                REFERENCES ${process.env.DB_SCHEMA}.usuarios(id),
             CONSTRAINT fk_id_grupo
               FOREIGN KEY(id_grupo)
-                REFERENCES grupo(id)
+                REFERENCES ${process.env.DB_SCHEMA}.grupos(id)
           );
         `)
         resolve(rows[0])
@@ -123,4 +123,4 @@ class DaoRelacionamentoTurmasParticipantes {
     })
   }
 }
-module.exports = {DaoRelacionamentoTurmasParticipantes}
+module.exports = {DaoRelacionamentoUsuariosGrupos}

@@ -19,10 +19,10 @@ class DaoMensagens {
             enviado_por INT NOT NULL,
             CONSTRAINT fk_grupo_id
               FOREIGN KEY(grupo_id)
-                REFERENCES grupos(id)
+                REFERENCES ${process.env.DB_SCHEMA}.grupos(id),
             CONSTRAINT fk_enviado_por
               FOREIGN KEY(enviado_por)
-                REFERENCES usuarios(id)
+                REFERENCES ${process.env.DB_SCHEMA}.usuarios(id)
           );
         `)
         resolve(rows[0])

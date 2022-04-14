@@ -18,7 +18,7 @@ class DaoUsuarios {
             matricula_participante VARCHAR(15) NOT NULL,
             CONSTRAINT fk_matricula_participante
               FOREIGN KEY(matricula_participante)
-                REFERENCES participantes(matricula)
+                REFERENCES ${process.env.DB_SCHEMA}.participantes(matricula)
           );
         `)
         resolve(rows[0])

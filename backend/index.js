@@ -1,7 +1,7 @@
 require('dotenv').config()
 //Dao
-const {DaoMateria} = require('./dao/daoMaterias')
-const daoMaterias = new DaoMateria()
+const {DaoMaterias} = require('./dao/daoMaterias')
+const daoMaterias = new DaoMaterias()
 const {DaoTurmas} = require('./dao/daoTurmas')
 const daoTurmas = new DaoTurmas()
 const {DaoParticipantes} = require('./dao/daoParticipantes')
@@ -15,7 +15,7 @@ const daoGrupos = new DaoGrupos()
 const {DaoRelacionamentoTurmasParticipantes} = require('./dao/daoRelacionamentoTurmasParticipantes')
 const daoRelacionamentoTurmasParticipantes = new DaoRelacionamentoTurmasParticipantes()
 const {DaoRelacionamentoUsuariosGrupos} = require('./dao/daoRelacionamentoUsuariosGrupos')
-const daoRelacionamentoUsuariosGrupos = new DaoRelacionamentoTurmasParticipantes()
+const daoRelacionamentoUsuariosGrupos = new DaoRelacionamentoUsuariosGrupos()
 // Routes
 const login = require('./routes/login')
 const importRoute = require('./routes/import')
@@ -29,15 +29,19 @@ const app = express()
 app.use(express.json())
 
 // DB create tables
+async function CreateTables(){
+  await daoMaterias.createTable()
+  await daoTurmas.createTable()
+  await daoParticipantes.createTable()
+  await daoUsuarios.createTable()
+  await daoGrupos.createTable()
+  await daoMensagens.createTable()
+  await daoRelacionamentoTurmasParticipantes.createTable()
+  await daoRelacionamentoUsuariosGrupos.createTable()
+}
 
-daoMaterias.createTable()
-daoTurmas.createTable()
-daoParticipantes.createTable()
-daoUsuarios.createTable()
-daoMensagens.createTable()
-daoGrupos.createTable()
-daoRelacionamentoTurmasParticipantes.createTable()
-daoRelacionamentoUsuariosGrupos.createTable()
+CreateTables()
+
 
 // VarEnvs
 const PORT = process.env.PORT
