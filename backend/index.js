@@ -20,6 +20,7 @@ const daoRelacionamentoUsuariosGrupos = new DaoRelacionamentoUsuariosGrupos()
 const login = require('./routes/login')
 const importRoute = require('./routes/import')
 const materiasRoute = require('./routes/materias')
+const turmasRoute = require('./routes/turmas')
 // Middlewares
 const {validateJwt} = require('./middlewares/jwtValidation')
 
@@ -49,6 +50,7 @@ const PORT = process.env.PORT
 app.use('/', login)
 app.use('/import', importRoute)
 app.use('/materias', materiasRoute)
+app.use('/turmas', turmasRoute)
 
 app.get('/', validateJwt, async (req, res) => {
   const db = await pool.query('SELECT NOW()')
