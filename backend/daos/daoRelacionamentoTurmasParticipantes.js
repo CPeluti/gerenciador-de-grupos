@@ -1,5 +1,6 @@
 const {pool} = require('../postgres')
 const format = require('pg-format')
+const e = require('express')
 
 class DaoRelacionamentoTurmasParticipantes {
   constructor () {
@@ -30,16 +31,21 @@ class DaoRelacionamentoTurmasParticipantes {
   }
   create (relacionamento) {
     return new Promise( async (resolve, reject) => {
-      try {
-        const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (id_turma, matricula_participante)
-          VALUES ($1, $2)
-          ON CONFLICT DO NOTHING
-          RETURNING *;
-        `, [relacionamento.id_turma, relacionamento.matricula_participante])
-        resolve(rows[0])
-      } catch (error) {
-        reject(error)
+      const relacionamentos = await this.findBy({id_turma: relacionamento.id_turma, matricula_participante: relacionamento.matricula_participante})
+      if(relacionamentos.length <= 0){
+        try {
+          const { rows } = await this.bd.query(`
+            INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (id_turma, matricula_participante)
+            VALUES ($1, $2)
+            ON CONFLICT DO NOTHING
+            RETURNING *;
+          `, [relacionamento.id_turma, relacionamento.matricula_participante])
+          resolve(rows[0])
+        } catch (error) {
+          reject(error)
+        }
+      } else {
+        resolve ({})
       }
     })
   }

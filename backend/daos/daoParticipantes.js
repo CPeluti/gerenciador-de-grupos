@@ -14,7 +14,8 @@ class DaoParticipantes {
           CREATE TABLE IF NOT EXISTS ${process.env.DB_SCHEMA}.${this.tabela} (
             matricula VARCHAR(15) PRIMARY KEY,
             nome VARCHAR(60) NOT NULL,
-            email VARCHAR(255) NOT NULL
+            email VARCHAR(255) NOT NULL,
+            ocupacao VARCHAR(15) NOT NULL
           );
         `)
         resolve(rows[0])
@@ -27,11 +28,11 @@ class DaoParticipantes {
     return new Promise( async (resolve, reject) => {
       try {
         const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (matricula, nome, email)
-          VALUES ($1, $2, $3)
+          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (matricula, nome, email, ocupacao)
+          VALUES ($1, $2, $3, $4)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [participante.matricula, participante.nome, participante.email])
+        `, [participante.matricula, participante.nome, participante.email, participante.ocupacao])
         resolve(rows[0])
       } catch (error) {
         reject(error)
