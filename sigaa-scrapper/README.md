@@ -19,7 +19,7 @@ Crawler para pegar informações de turmas, matérias e alunos do sigaa.
   > Senha do usuário do Banco de Dados
 - DB_SCHEMA
   > Schema do banco de dados com as tabelas
-- USERNAME
+- USUARIO
   > Usuário do SIGAA (Com permissões de aluno enquanto for WIP)
 - PASSWORD
   > Senha do SIGAA

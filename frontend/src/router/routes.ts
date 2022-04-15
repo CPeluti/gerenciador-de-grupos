@@ -1,10 +1,11 @@
 import { RouteRecordRaw } from 'vue-router';
+import materiasPage from 'pages/cruds/MateriasPage.vue';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    component: () => import('pages/cruds/MateriasPage.vue'),
+    // children: [{ path: '', component: () => materiasPage}],
   },
 
   // Always leave this as last one,
