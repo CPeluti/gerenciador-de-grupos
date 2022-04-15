@@ -12,7 +12,8 @@ async function login(page, USER, PASSWORD){
 	await page.waitForSelector(buttonSelector);
 	await page.$eval(usernameSelector, (el, USER) => {el.value = USER}, USER)
 	await page.$eval(passwordSelector, (el, PASSWORD) => {el.value = PASSWORD}, PASSWORD)
-	await page.click(buttonSelector)
+	await page.screenshot({path:'print.png'})
+  await page.click(buttonSelector)
 }
 
 async function getClassesIds(page){

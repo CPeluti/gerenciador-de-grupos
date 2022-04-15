@@ -52,7 +52,7 @@ class DaoMaterias {
         return condicional
       })
       try {
-        const { rows } = await this.bd.query(`SELECT * FROM ${process.env.DB_SCHEMA}.${this.tabela} WHERE ${binds.join(' AND ')};`, [...Object.values(filtros)])
+        const { rows } = await this.bd.query(`SELECT * FROM ${process.env.DB_SCHEMA}.${this.tabela} ${binds.length? "WHERE" : ""} ${binds.join(' AND ')};`, [...Object.values(filtros)])
         resolve(rows)
       } catch (error) {
         reject(error)

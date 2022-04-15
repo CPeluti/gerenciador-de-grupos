@@ -40,6 +40,7 @@ const importController = async (req, res) => {
       await daoRelacionamentoTurmasParticipantes.create({id_turma: turma[0].id, matricula_participante: docente.matricula})
     }
     console.log('Participantes Criados')
+    res.status(201).send('Dados importados do SIGAA')
   } catch (e) {
     console.error(e)
     res.send(new Error(e))
