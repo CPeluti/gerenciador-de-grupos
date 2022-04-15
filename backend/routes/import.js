@@ -1,8 +1,8 @@
 const express = require('express')
-const {importController} = require('../controllers/importController')
+const {importController} = require('../controllers/scrapperController')
 
 const router = express.Router();
 
-router.post('/', importController);
+router.get('/', importController);
 
 module.exports = router;

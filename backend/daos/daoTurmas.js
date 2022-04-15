@@ -1,5 +1,6 @@
 const {pool} = require('../postgres')
 const format = require('pg-format')
+const e = require('express')
 
 class DaoTurmas {
   constructor () {
@@ -19,7 +20,7 @@ class DaoTurmas {
             codigo_materia varchar(15) NOT NULL,
             CONSTRAINT fk_codigo_materia
               FOREIGN KEY(codigo_materia)
-                REFERENCES ${process.env.DB_SCHEMA}.materia(codigo)
+                REFERENCES ${process.env.DB_SCHEMA}.materias(codigo)
           );
         `)
         resolve(rows[0])
@@ -31,13 +32,18 @@ class DaoTurmas {
   create (turma) {
     return new Promise( async (resolve, reject) => {
       try {
-        const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (codigo, semestre, horario, codigo_materia)
-          VALUES ($1, $2, $3, $4)
-          ON CONFLICT DO NOTHING
-          RETURNING *;
-        `, [turma.codigo, turma.semestre, turma.horario, turma.codigo_materia])
-        resolve(rows[0])
+        const turmas = await this.findBy({codigo: turma.codigo, semestre: turma.semestre, codigo_materia: turma.codigo_materia})
+        if(turmas.length <= 0){
+          const { rows } = await this.bd.query(`
+            INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (codigo, semestre, horario, codigo_materia)
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT DO NOTHING
+            RETURNING *;
+          `, [turma.codigo, turma.semestre, turma.horario, turma.codigo_materia])
+          resolve(rows[0])
+        } else {
+          resolve({})
+        }
       } catch (error) {
         reject(error)
       }
