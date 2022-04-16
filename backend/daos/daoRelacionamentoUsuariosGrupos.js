@@ -16,10 +16,10 @@ class DaoRelacionamentoUsuariosGrupos {
             id_grupo INT NOT NULL,
             CONSTRAINT fk_id_usuario
               FOREIGN KEY(id_usuario)
-                REFERENCES ${process.env.DB_SCHEMA}.usuarios(id),
+                REFERENCES ${process.env.DB_SCHEMA}.usuarios(id) ON DELETE CASCADE,
             CONSTRAINT fk_id_grupo
               FOREIGN KEY(id_grupo)
-                REFERENCES ${process.env.DB_SCHEMA}.grupos(id)
+                REFERENCES ${process.env.DB_SCHEMA}.grupos(id) ON DELETE CASCADE
           );
         `)
         resolve(rows[0])

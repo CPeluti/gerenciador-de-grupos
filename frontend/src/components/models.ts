@@ -1,6 +1,7 @@
-export interface Todo {
-  id: number;
-  content: string;
+
+export interface Materia {
+  codigo: string;
+  nome: string;
 }
 
 export interface Meta {

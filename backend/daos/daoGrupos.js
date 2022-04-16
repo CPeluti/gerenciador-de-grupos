@@ -19,10 +19,10 @@ class DaoGrupos {
             turma_id INT NOT NULL,
             CONSTRAINT fk_criado_por
               FOREIGN KEY(criado_por)
-                REFERENCES ${process.env.DB_SCHEMA}.usuarios(id),
+                REFERENCES ${process.env.DB_SCHEMA}.usuarios(id) ON DELETE CASCADE,
             CONSTRAINT fk_turma_id
               FOREIGN KEY(turma_id)
-                REFERENCES ${process.env.DB_SCHEMA}.turmas(id)
+                REFERENCES ${process.env.DB_SCHEMA}.turmas(id) ON DELETE CASCADE
           );
         `)
         resolve(rows[0])

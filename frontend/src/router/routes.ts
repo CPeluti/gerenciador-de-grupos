@@ -1,5 +1,4 @@
 import { RouteRecordRaw } from 'vue-router';
-import materiasPage from 'pages/cruds/MateriasPage.vue';
 
 const routes: RouteRecordRaw[] = [
   {

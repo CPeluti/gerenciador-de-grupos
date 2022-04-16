@@ -18,7 +18,7 @@ class DaoUsuarios {
             matricula_participante VARCHAR(15) NOT NULL,
             CONSTRAINT fk_matricula_participante
               FOREIGN KEY(matricula_participante)
-                REFERENCES ${process.env.DB_SCHEMA}.participantes(matricula)
+                REFERENCES ${process.env.DB_SCHEMA}.participantes(matricula) ON DELETE CASCADE
           );
         `)
         resolve(rows[0])

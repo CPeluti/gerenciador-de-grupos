@@ -20,7 +20,7 @@ class DaoTurmas {
             codigo_materia varchar(15) NOT NULL,
             CONSTRAINT fk_codigo_materia
               FOREIGN KEY(codigo_materia)
-                REFERENCES ${process.env.DB_SCHEMA}.materias(codigo)
+                REFERENCES ${process.env.DB_SCHEMA}.materias(codigo) ON DELETE CASCADE
           );
         `)
         resolve(rows[0])
