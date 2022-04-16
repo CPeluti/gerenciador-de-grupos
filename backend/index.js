@@ -49,7 +49,7 @@ CreateTables()
 // VarEnvs
 const PORT = process.env.PORT
 
-app.use('/', login)
+app.use('/login', login)
 app.use('/import', importRoute)
 app.use('/materias', materiasRoute)
 app.use('/turmas', turmasRoute)

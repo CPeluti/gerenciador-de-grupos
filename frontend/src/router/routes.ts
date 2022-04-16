@@ -8,6 +8,12 @@ const routes: RouteRecordRaw[] = [
     // children: [{ path: '', component: () => materiasPage}],
   },
 
+  {
+    path: '/login',
+    component: () => import('pages/cruds/LoginPage.vue'),
+    // children: [{ path: '', component: () => materiasPage}],
+  },
+
   // Always leave this as last one,
   // but you can also remove it
   {

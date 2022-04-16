@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const login = (req, res) => {
   const username = req.body.username
   const password = req.body.password
+  console.log('passou', password)
 
   if (username == 'caio' && password == '2134') {
     const token = jwt.sign({

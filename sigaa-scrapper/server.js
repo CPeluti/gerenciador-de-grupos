@@ -10,7 +10,7 @@ app.use(express.json())
 
 // ROUTES
 app.post("/turmas", async (req, res) => {
-    const browser = await puppeteer.launch({ headless: true, executablePath: '/nix/var/nix/profiles/default/bin/chromium' })
+    const browser = await puppeteer.launch({ headless: true, executablePath: '/usr/bin/google-chrome-stable' })
 	const page = await browser.newPage()
 	await login(page, process.env.USUARIO, process.env.PASSWORD)
     const selectors = await getClassesIds(page)
@@ -26,7 +26,7 @@ app.post("/turmas", async (req, res) => {
     res.send(infos)
 })
 app.post("/participantes", async (req, res) => {
-    const browser = await puppeteer.launch({ headless: true, executablePath: '/nix/var/nix/profiles/default/bin/chromium'})
+    const browser = await puppeteer.launch({ headless: true, executablePath: '/usr/bin/google-chrome-stable'})
 	const page = await browser.newPage()
 	await login(page, process.env.USUARIO, process.env.PASSWORD)
     const selectors = await getClassesIds(page)
