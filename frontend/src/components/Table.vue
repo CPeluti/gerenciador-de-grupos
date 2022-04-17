@@ -31,12 +31,12 @@
 </template>
 <script lang="ts" setup>
     import {ref} from 'vue'
-    import { Materia } from './models';
+    import { Materia, Turma } from './models';
 
     //emits
     const emit = defineEmits<{
-        (e: 'edit', row: Materia): void,
-        (e: 'exclude', row: Materia): void
+        (e: 'edit', row: Materia|Turma): void,
+        (e: 'exclude', row: Materia|Turma): void
     }>()
 
     //props
@@ -46,10 +46,10 @@
         rowKey: String,
     })
     
-    const edit = (row: Materia) => {
+    const edit = (row: Materia|Turma) => {
         emit('edit', row)
     }
-    const exclude = (row: Materia) => {
+    const exclude = (row: Materia|Turma) => {
         emit('exclude', row)
     }
     // let valores = toRef(props, 'rows')

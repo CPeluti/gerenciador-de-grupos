@@ -3,7 +3,7 @@
         <div class="col-5">
             <q-card class="col-sm-6 col-md-4 q-pa-md" rounded>
                 <q-card-section>
-                    <div class="text-h6">Busca de matérias</div>
+                    <div class="text-h6">Cadastro de Turmas</div>
                 </q-card-section>
                 <q-separator />
                 <q-card-section>
@@ -15,24 +15,42 @@
                             rounded
                             :rules="[val=>!!val || 'Campo obrigatório']"
                             label="Código"
-                            :disable="editMode"
-                            placeholder="Digite o código da materia"
+                            placeholder="Digite o código da turma"
                         />
                         <q-input 
                             class="col-12"
                             outlined
-                            v-model="nome"
+                            v-model="semestre"
                             :rules="[val=>!!val || 'Campo obrigatório']"
                             rounded
-                            label="Nome"
-                            placeholder="Digite o nome da materia"
+                            label="Semestre"
+                            placeholder="Digite o semestre da turma"
+                        />
+                        <q-input 
+                            class="col-12"
+                            outlined
+                            v-model="horario"
+                            :rules="[val=>!!val || 'Campo obrigatório']"
+                            rounded
+                            label="Horario"
+                            placeholder="Digite o horario da matéria"
+                        />
+                        <q-select 
+                            class="col-12"
+                            outlined
+                            v-model="materia"
+                            :options="materias"
+                            :rules="[val=>!!val || 'Campo obrigatório']"
+                            rounded
+                            label="Matéria"
+                            placeholder="Escolha a matéria da turma"
                         />
                         <q-btn
                             class="col-12"
                             rounded
                             color="positive"
                             label="Criar"
-                            @click="criaMaterias"
+                            @click="criaTurmas"
                             v-if="!editMode"
                         />
                         <q-btn
@@ -48,7 +66,7 @@
                             rounded
                             color="primary"
                             label="Editar"
-                            @click="editMateria"
+                            @click="editTurma"
                             v-if="editMode"
                         />
                     </q-form>
@@ -59,10 +77,10 @@
         <div class="col-5" >
             <tabela 
                 :columns="columnsTabela"
-                :rows="materias.value"
+                :rows="turmas.value"
                 row-key="codigo"
                 @edit="changeToEditMode"
-                @exclude="excludeMateria"
+                @exclude="excludeTurma"
                 :visible-columns="visibleColumns"
             />
         </div>
@@ -74,49 +92,60 @@
     import {ref, reactive, onBeforeMount, watch} from 'vue'
     import {useQuasar} from 'quasar'
     import axios from 'axios' 
-    import { Materia } from 'components/models';
+    import { Turma, Materia } from 'components/models';
     // Data
     const form = ref(null)
     const $q = useQuasar()
     const codigo = ref()
-    const nome = ref()
+    const semestre = ref()
+    const horario = ref()
+    const materia = ref()
+    const materias = ref()
     const editMode = ref(false)
     const codigoEdit = ref()
     
     const columnsTabela = ref([
         {name: 'codigo', align:'center', label: 'Código', field: 'codigo'}, 
-        {name: 'departamento', align: 'center', label: 'Departamento', field: 'departamento'},
-        {name: 'nome', align:'center', label: 'Nome', field: 'nome'},
+        {name: 'semestre', align: 'center', label: 'Semestre', field: 'semestre'},
+        {name: 'horario', align:'center', label: 'Horario', field: 'horario'},
+        {name: 'codigo_materia', align:'center', label: 'Materia', field: 'codigo_materia'},
         {name: 'editar', align:'center', label: 'Editar', field: 'editar'},
         {name: 'excluir', align:'center', label: 'Excluir', field: 'excluir'}
     ])
     const visibleColumns = ref(columnsTabela.value.map(c => c.name))
-    let materias = reactive<Array<Materia>>([])
+    let turmas = reactive<Array<Turma>>([])
     // Watch
     watch(editMode, (value)=>{
         if(value){
             visibleColumns.value = visibleColumns.value.filter(column => column !== 'editar')
         } else {
             visibleColumns.value = columnsTabela.value.map(c => c.name)
-            codigo.value = ''
-            nome.value = ''
+            clearForm()
         }
     })
     // Methods
-    const criaMaterias = async () => {
+    const clearForm = () => {
+        codigo.value = ''
+        semestre.value = ''
+        horario.value = ''
+        materia.value = ''
+    }
+    const criaTurmas = async () => {
         const isValid = await form.value.validate()
         if(isValid){
             try {
-                const response = await axios.post('http://localhost:3030/materias', {
+                const response = await axios.post('http://localhost:3030/turmas', {
                     materias: [{
                         codigo: codigo.value,
-                        nome: nome.value
+                        semestre: semestre.value,
+                        horario: horario.value,
+                        codigo_materia: materia.value
                     }]
                 })
-                materias.value.push(response.data.materias[0])
+                turmas.value.push(response.data.materias[0])
                 $q.notify({
                     color: 'positive',
-                    message: 'Materia criada com sucesso'
+                    message: 'Turma criada com sucesso'
                 })
             } catch (error) {
                 $q.notify({
@@ -133,47 +162,65 @@
         }
     }
     const buscaMaterias = async () => {
-        try{
-            const resultado = await axios.get('http://localhost:3030/materias')
-            $q.notify({
-                color: 'positive',
-                message: `${resultado.data.length} materias encontradas`,
-                timeout: 2000
-            })
-            materias.value = resultado.data
-        } catch (e) {
+        try {
+            const {data} = await axios.get('http://localhost:3030/materias')
+            materias.value = data.map((mat: Materia) => {
+                return {
+                    label: `${mat.nome} (${mat.codigo})`,
+                    value: mat.codigo
+                }
+            })            
+        } catch (error) {
             $q.notify({
                 color: 'negative',
                 message: 'Erro ao buscar as materias'
             })
         }
-        
-        console.log(materias)
     }
-    const editMateria = async () => {
+    const buscaTurmas = async () => {
         try{
-            const res = await axios.patch(`http://localhost:3030/materias/${codigoEdit.value}`, {
+            const resultado = await axios.get('http://localhost:3030/turmas')
+            $q.notify({
+                color: 'positive',
+                message: `${resultado.data.length} turmas encontradas`,
+                timeout: 2000
+            })
+            turmas.value = resultado.data
+        } catch (e) {
+            $q.notify({
+                color: 'negative',
+                message: 'Erro ao buscar as turmas'
+            })
+        }
+        
+        console.log(turmas)
+    }
+    const editTurma = async () => {
+        try{
+            const res = await axios.patch(`http://localhost:3030/Turmas/${codigoEdit.value}`, {
                 codigo: codigo.value,
-                nome: nome.value
+                semestre: semestre.value,
+                horario: horario.value,
+                codigo_materia: materia.value,
             })
             editMode.value = false
             console.log(res)
-            buscaMaterias()
+            buscaTurmas()
         } catch (e) {
             console.error(e)
         }
         
     }
-    const excludeMateria =  (row: Materia) => {
+    const excludeTurma =  (row: Turma) => {
         $q.dialog({
             title: 'Excluir',
-            message: `Deseja excluir a materia ${row.nome}?`,
+            message: `Deseja excluir a turma ${row.codigo} da matéria ${row.codigo_materia}?`,
             ok: 'Sim',
             cancel: 'Não'
         }).onOk(async ()=>{
             try{
-                const res = await axios.delete(`http://localhost:3030/materias/${row.codigo}`)
-                buscaMaterias()
+                const res = await axios.delete(`http://localhost:3030/Turmas/${row.id}`)
+                buscaTurmas()
             } catch (e) {
                 console.error(e)
             }
@@ -181,11 +228,13 @@
         
         
     }
-    const changeToEditMode = (row: Materia) => {
+    const changeToEditMode = (row: Turma) => {
         editMode.value = !editMode.value
         codigo.value = row.codigo
-        nome.value = row.nome
-        codigoEdit.value = row.codigo
+        semestre.value = row.semestre
+        horario.value = row.horario
+        materia.value = row.codigo_materia
+        codigoEdit.value = row.id
         // axios.patch(`http://localhost:3030/materias/${row.codigo}`, {
         //     codigo: row.codigo,
         //     nome: row.nome
@@ -193,7 +242,8 @@
         console.log(editMode.value)
     }
     // Life cycle hooks
-    onBeforeMount(() => {
-        buscaMaterias()
+    onBeforeMount(async () => {
+        await buscaMaterias()
+        await buscaTurmas()
     })
 </script>
