@@ -21,6 +21,7 @@ const login = require('./routes/login')
 const importRoute = require('./routes/import')
 const materiasRoute = require('./routes/materias')
 const turmasRoute = require('./routes/turmas')
+const participantesRoute = require('./routes/participantes')
 // Middlewares
 const {validateJwt} = require('./middlewares/jwtValidation')
 
@@ -53,6 +54,8 @@ app.use('/', login)
 app.use('/import', importRoute)
 app.use('/materias', materiasRoute)
 app.use('/turmas', turmasRoute)
+app.use('/participantes', participantesRoute)
+
 
 app.get('/', validateJwt, async (req, res) => {
   const db = await pool.query('SELECT NOW()')

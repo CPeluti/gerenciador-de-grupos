@@ -99,6 +99,7 @@ class DaoTurmas {
         contador++
         return condicional
       })
+
       try {
         const { rows } = await this.bd.query(`
           UPDATE ${process.env.DB_SCHEMA}.${this.tabela}
@@ -120,7 +121,7 @@ class DaoTurmas {
       try {
         const { rows } = await this.bd.query(`
          DELETE FROM ${process.env.DB_SCHEMA}.${this.tabela}
-         WHERE CODIGO = $1
+         WHERE ID = $1
         `, [id])
         resolve(rows[0])
       } catch (error) {

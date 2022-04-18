@@ -33,7 +33,8 @@ const turmasPatch = async (req, res) => {
   if(dados.length > 1) {
     res.status(500).json({message:"Somente um registro por vez"})
   }
-  const filtro = {codigo: req.params.id}
+  const filtro = {id: req.params.id}
+  console.log(filtro)
   try{
     const turmas = await dao.update(filtro, dados)
     res.status(200).json(turmas)

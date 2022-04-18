@@ -4,6 +4,10 @@ export interface Materia {
   nome: string;
 }
 
+export interface User {
+  matricula: string;
+  senha: string;
+}
 export interface Turma {
   codigo: string;
   semestre: string;
