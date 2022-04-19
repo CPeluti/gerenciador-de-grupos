@@ -9,9 +9,14 @@ export const credentialsStore = defineStore("credentials", {
   actions: {
     authenticate: async (user: User) => {
       try {
-        // const { data } = await axios.post("http://localhost:3030/login", user);
-        // localStorage.setItem("token", data.token);
-        sessionStorage.setItem("token", "Token temporario");
+        console.log("authenticating");
+        console.log(user)
+        const { data } = await axios.post("http://localhost:3030/login", {usuario: user.matricula, senha: user.senha});
+        console.log(data.usuario);
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("userInfo", JSON.stringify({...data.usuario}));
+        console.log(data.usuario)
+        // sessionStorage.setItem("token", "Token temporario");
         return true;
       } catch (error) {
         console.error(error);
@@ -19,11 +24,11 @@ export const credentialsStore = defineStore("credentials", {
       }
     },
     isAuthenticated: async () => {
-      console.log(sessionStorage.getItem("token"));
+      console.log('localstorage4',sessionStorage.getItem("token"));
       const token = sessionStorage.getItem("token");
       if (token) {
         try {
-          const res = await axios.post("http://localhost:3030/auth", token);
+          const res = await axios.post("http://localhost:3030/login/validate", {token});
           console.log(res)
           const data = { authenticated: true };
           return data.authenticated;

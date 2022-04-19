@@ -2,25 +2,25 @@ const {pool} = require('../postgres')
 const format = require('pg-format')
 const e = require('express')
 
-class DaoTurmas {
+class DaoRelacionamentoGruposInteresses {
   constructor () {
-    this.tabela = 'turmas'
+    this.tabela = 'grupos_interesses'
     this.bd = pool
   }
   createTable() {
     return new Promise( async (resolve, reject) => {
       try {
-        //TODO: arrumar tamanho do codigo
         const { rows } = await this.bd.query(`
           CREATE TABLE IF NOT EXISTS ${process.env.DB_SCHEMA}.${this.tabela} (
             id SERIAL PRIMARY KEY,
-            codigo VARCHAR(15) NOT NULL,
-            semestre VARCHAR(8) NOT NULL,
-            horario VARCHAR(255) NOT NULL,
-            codigo_materia varchar(15) NOT NULL,
-            CONSTRAINT fk_codigo_materia
-              FOREIGN KEY(codigo_materia)
-                REFERENCES ${process.env.DB_SCHEMA}.materias(codigo) ON DELETE CASCADE
+            id_grupo INT NOT NULL,
+            id_interesse INT NOT NULL,
+            CONSTRAINT fk_id_grupo
+              FOREIGN KEY(id_grupo)
+                REFERENCES ${process.env.DB_SCHEMA}.grupos(id) ON DELETE CASCADE,
+            CONSTRAINT fk_id_interesse
+              FOREIGN KEY(id_interesse)
+                REFERENCES ${process.env.DB_SCHEMA}.interesses(id) ON DELETE CASCADE
           );
         `)
         resolve(rows[0])
@@ -29,21 +29,16 @@ class DaoTurmas {
       }
     })
   }
-  create (turma) {
+  create (relacionamento) {
     return new Promise( async (resolve, reject) => {
       try {
-        const turmas = await this.findBy({codigo: turma.codigo, semestre: turma.semestre, codigo_materia: turma.codigo_materia})
-        if(turmas.length <= 0){
-          const { rows } = await this.bd.query(`
-            INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (codigo, semestre, horario, codigo_materia)
-            VALUES ($1, $2, $3, $4)
-            ON CONFLICT DO NOTHING
-            RETURNING *;
-          `, [turma.codigo, turma.semestre, turma.horario, turma.codigo_materia])
-          resolve(rows[0])
-        } else {
-          resolve({})
-        }
+        const { rows } = await this.bd.query(`
+          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (id_grupo, id_interesse)
+          VALUES ($1, $2)
+          ON CONFLICT DO NOTHING
+          RETURNING *;
+        `, [relacionamento.id_grupo, relacionamento.id_interesse])
+        resolve(rows[0])
       } catch (error) {
         reject(error)
       }
@@ -64,20 +59,7 @@ class DaoTurmas {
         return condicional
       })
       try {
-        const { rows } = await this.bd.query(`SELECT * FROM ${process.env.DB_SCHEMA}.${this.tabela} ${binds.length? "WHERE" : ""} ${binds.join(' AND ')};`, [...Object.values(filtros)])
-        resolve(rows)
-      } catch (error) {
-        reject(error)
-      }
-    })
-  }
-  findByParticipante (filtro) {
-    return new Promise( async (resolve, reject) => {
-      let binds = []
-      let contador = 1
-      try {
-        console.log('teste', filtro)
-        const { rows } = await this.bd.query(`SELECT tabela.*, m.nome FROM ${process.env.DB_SCHEMA}.${this.tabela} tabela INNER JOIN ${process.env.DB_SCHEMA}.materias AS m ON m.codigo = tabela.codigo_materia WHERE id in (SELECT id_turma FROM ${process.env.DB_SCHEMA}.turmas_participantes WHERE matricula_participante=$1)`, [filtro.id_usuario])
+        const { rows } = await this.bd.query(`SELECT * FROM ${process.env.DB_SCHEMA}.${this.tabela} WHERE ${binds.join(' AND ')};`, [...Object.values(filtros)])
         resolve(rows)
       } catch (error) {
         reject(error)
@@ -112,7 +94,6 @@ class DaoTurmas {
         contador++
         return condicional
       })
-
       try {
         const { rows } = await this.bd.query(`
           UPDATE ${process.env.DB_SCHEMA}.${this.tabela}
@@ -134,7 +115,7 @@ class DaoTurmas {
       try {
         const { rows } = await this.bd.query(`
          DELETE FROM ${process.env.DB_SCHEMA}.${this.tabela}
-         WHERE ID = $1
+         WHERE CODIGO = $1
         `, [id])
         resolve(rows[0])
       } catch (error) {
@@ -143,4 +124,4 @@ class DaoTurmas {
     })
   }
 }
-module.exports = {DaoTurmas}
+module.exports = {DaoRelacionamentoGruposInteresses}

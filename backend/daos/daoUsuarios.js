@@ -14,7 +14,6 @@ class DaoUsuarios {
             id SERIAL PRIMARY KEY,
             usuario VARCHAR(60) NOT NULL,
             senha varchar(255) NOT NULL,
-            salt varchar(255) NOT NULL,
             matricula_participante VARCHAR(15) NOT NULL,
             CONSTRAINT fk_matricula_participante
               FOREIGN KEY(matricula_participante)
@@ -30,12 +29,13 @@ class DaoUsuarios {
   create (usuario) {
     return new Promise( async (resolve, reject) => {
       try {
+        console.log(usuario)
         const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (usuario,senha,salt,matricula_participante)
-          VALUES ($1, $2, $3, $4)
+          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (usuario,senha,matricula_participante)
+          VALUES ($1, $2, $3)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [usuario.usuario, usuario.senha, usuario.salt, usuario.matricula_participante])
+        `, [usuario.usuario, usuario.senha, usuario.matricula_participante])
         resolve(rows[0])
       } catch (error) {
         reject(error)

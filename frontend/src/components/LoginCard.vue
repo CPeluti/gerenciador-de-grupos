@@ -35,12 +35,19 @@ const senha = ref()
 const $q = useQuasar()
 
 const login = async () => {
+  if(!matricula.value || !senha.value) {
+    $q.notify({
+      message: 'Preencha todos os campos',
+      color: 'negative'
+    })
+    return
+  }
   try{
     const res = await authenticate({
       matricula: matricula.value,
       senha: senha.value
     });
-    router.push('/home')
+    router.push('/')
   } catch (e) {
     $q.notify({
       color: 'negative',
