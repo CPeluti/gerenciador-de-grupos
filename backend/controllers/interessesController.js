@@ -2,7 +2,7 @@ const {DaoInteresses} = require('../daos/daoInteresses')
 const dao = new DaoInteresses()
 
 const interessesCreate = async (req, res) => {
-  const interesses = req.body.interesses
+  const interesses = req.fields.interesses
   let interessesCriadas = []
   for (const element of interesses) {
     try {
@@ -20,7 +20,6 @@ const interessesCreate = async (req, res) => {
 const interessesFind = async (req, res) => {
   const params = req.query
   try{
-    console.log(params)
     const interesses = await dao.findBy(params)
     res.status(200).json(interesses)
   } catch (error) {
@@ -29,7 +28,7 @@ const interessesFind = async (req, res) => {
 }
 
 const interessesPatch = async (req, res) => {
-  const dados = req.body
+  const dados = req.fields
   if(dados.length > 1) {
     res.status(500).json({message:"Somente um registro por vez"})
   }

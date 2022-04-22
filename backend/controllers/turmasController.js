@@ -2,7 +2,7 @@ const {DaoTurmas} = require('../daos/daoTurmas')
 const dao = new DaoTurmas()
 
 const turmasCreate = async (req, res) => {
-  const turmas = req.body.turmas
+  const turmas = req.fields.turmas
   let turmasCriadas = []
   for (const element of turmas) {
     try {
@@ -20,7 +20,6 @@ const turmasCreate = async (req, res) => {
 const turmasFind = async (req, res) => {
   const params = req.query
   try{
-    console.log(params)
     const turmas = await dao.findBy(params)
     res.status(200).json(turmas)
   } catch (error) {
@@ -29,12 +28,11 @@ const turmasFind = async (req, res) => {
 }
 
 const turmasPatch = async (req, res) => {
-  const dados = req.body
+  const dados = req.fields
   if(dados.length > 1) {
     res.status(500).json({message:"Somente um registro por vez"})
   }
   const filtro = {id: req.params.id}
-  console.log(filtro)
   try{
     const turmas = await dao.update(filtro, dados)
     res.status(200).json(turmas)

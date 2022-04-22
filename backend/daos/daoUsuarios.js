@@ -29,7 +29,6 @@ class DaoUsuarios {
   create (usuario) {
     return new Promise( async (resolve, reject) => {
       try {
-        console.log(usuario)
         const { rows } = await this.bd.query(`
           INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (usuario,senha,matricula_participante)
           VALUES ($1, $2, $3)

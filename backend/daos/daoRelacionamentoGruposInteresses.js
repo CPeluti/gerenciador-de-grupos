@@ -66,6 +66,28 @@ class DaoRelacionamentoGruposInteresses {
       }
     })
   }
+  findInteresseBy (filtros) {
+    return new Promise( async (resolve, reject) => {
+      let binds = []
+      let contador = 1
+      Object.keys(filtros).forEach(key => {
+        let sqlParcial = `%I = `
+        sqlParcial = format(sqlParcial, key)
+        binds.push(sqlParcial)
+      })
+      binds = binds.map(item => {
+        const condicional = item+`$${contador}`
+        contador++
+        return condicional
+      })
+      try {
+        const { rows } = await this.bd.query(`SELECT i.* FROM ${process.env.DB_SCHEMA}.${this.tabela} INNER JOIN ${process.env.DB_SCHEMA}.interesses AS i on ${process.env.DB_SCHEMA}.${this.tabela}.id_interesse = i.id WHERE ${binds.join(' AND ')};`, [...Object.values(filtros)])
+        resolve(rows)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
   update (filtro, dados) {
     return new Promise( async (resolve, reject) => {
       if(!filtro){

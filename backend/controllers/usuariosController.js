@@ -4,8 +4,8 @@ const crypto = require("crypto-js")
 const dao = new DaoUsuarios()
 
 const usuariosCreate = async (req, res) => {
-  var cipherPassword = crypto.AES.encrypt(req.body.senha, process.env.CRIPTSENHA)
-  const matricula = req.body.matricula
+  var cipherPassword = crypto.AES.encrypt(req.fields.senha, process.env.CRIPTSENHA)
+  const matricula = req.fields.matricula
   const usuario = {
     usuario: matricula,
     senha: cipherPassword.toString(),
@@ -23,7 +23,6 @@ const usuariosCreate = async (req, res) => {
 const usuariosFind = async (req, res) => {
   const params = req.query
   try{
-    console.log(params)
     const usuarios = await dao.findBy(params)
     res.status(200).json(usuarios)
   } catch (error) {
@@ -32,12 +31,11 @@ const usuariosFind = async (req, res) => {
 }
 
 const usuariosPatch = async (req, res) => {
-  const dados = req.body
+  const dados = req.fields
   if(dados.length > 1) {
     res.status(500).json({message:"Somente um registro por vez"})
   }
   const filtro = {id: req.params.id}
-  console.log(filtro)
   try{
     const usuarios = await dao.update(filtro, dados)
     res.status(200).json(usuarios)

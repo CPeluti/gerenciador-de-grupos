@@ -2,8 +2,8 @@ const {DaoParticipantes} = require('../daos/daoParticipantes')
 const dao = new DaoParticipantes()
 
 const participantesCreate = async (req, res) => {
-  const participantes = req.body.participantes
-  console.log(participantes)
+  const participantes = req.fields.participantes
+  (participantes)
   let participantesCriados = []
   for (const element of participantes) {
     try {
@@ -22,7 +22,6 @@ const participantesCreate = async (req, res) => {
 const participantesFind = async (req, res) => {
   const params = req.query
   try{
-    console.log(params)
     const participantes = await dao.findBy(params)
     res.status(200).json(participantes)
   } catch (error) {
@@ -31,12 +30,11 @@ const participantesFind = async (req, res) => {
 }
 
 const participantesPatch = async (req, res) => {
-  const dados = req.body
+  const dados = req.fields
   if(dados.length > 1) {
     res.status(500).json({message:"Somente um registro por vez"})
   }
   const filtro = {matricula: req.params.id}
-  console.log(filtro)
   try{
     const participantes = await dao.update(filtro, dados)
     res.status(200).json(participantes)

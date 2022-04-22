@@ -3,17 +3,21 @@ const {DaoPedidos} = require('../daos/daoPedidos')
 const {DaoRelacionamentoUsuariosGrupos} = require('../daos/daoRelacionamentoUsuariosGrupos')
 const {DaoRelacionamentoGruposInteresses} = require('../daos/daoRelacionamentoGruposInteresses')
 const crypto = require("crypto-js")
+const formidable = require('formidable')
+const fs = require('fs')
+const { DaoArquivos } = require('../daos/daoArquivos')
 
 const dao = new DaoGrupos()
 const daoPedidos = new DaoPedidos()
 const daoRelacionamentoUsuariosGrupos = new DaoRelacionamentoUsuariosGrupos()
 const daoRelacionamentoGruposInteresses = new DaoRelacionamentoGruposInteresses()
+const daoArquivos = new DaoArquivos()
 
 const gruposCreate = async (req, res) => {
-  const {grupo, interesses} = req.body
-  console.log(grupo, interesses)
+  const {grupo, interesses} = req.fields
   try {
     const resultado = await dao.create(grupo)
+    daoRelacionamentoUsuariosGrupos.create({id_usuario: grupo.criado_por, id_grupo: resultado.id})
     for(interesse of interesses){
       await daoRelacionamentoGruposInteresses.create({id_grupo: resultado.id, id_interesse: interesse})
     }
@@ -28,8 +32,11 @@ const gruposCreate = async (req, res) => {
 const gruposFind = async (req, res) => {
   const params = req.query
   try{
-    console.log(params)
     const grupos = await dao.findBy(params)
+    for (grupo of grupos) {
+      let interesses = await daoRelacionamentoGruposInteresses.findInteresseBy({id_grupo: grupo.id_grupo}) 
+      grupo.interesses = interesses
+    }
     res.status(200).json(grupos)
   } catch (error) {
     res.status(500).json({message:"Falha ao buscar registro", error: error})
@@ -37,16 +44,17 @@ const gruposFind = async (req, res) => {
 }
 
 const gruposPatch = async (req, res) => {
-  const dados = req.body
+  const dados = req.fields
+  console.log(dados)
   if(dados.length > 1) {
     res.status(500).json({message:"Somente um registro por vez"})
   }
   const filtro = {id: req.params.id}
-  console.log(filtro)
   try{
     const grupos = await dao.update(filtro, dados)
     res.status(200).json(grupos)
   } catch (error) {
+    console.error(error)
     res.status(500).json({message:"Falha ao atualizar registro", error: error})
   }
 }
@@ -63,39 +71,83 @@ const gruposDelete = async (req, res) => {
     }
 }
 
+const gruposFindByParticipante = async (req, res) => {
+  const matricula = req.params.id
+  try {
+    const grupos = await dao.findByParticipante(matricula)
+    for (grupo of grupos) {
+      let interesses = await daoRelacionamentoGruposInteresses.findInteresseBy({id_grupo: grupo.id_grupo}) 
+      grupo.interesses = interesses
+    }
+
+    res.status(200).json(grupos)
+  } catch (e) {
+    res.status(500).send({message: "Falha ao buscar grupos", error: e})
+    console.error(e)
+  }
+}
+
 const criaPedido = async (req, res) => {
-    // req.body = {id_usuario, id_grupo}
-    const {pedido} = req.body
-    try{
-        await daoPedidos.create(pedido)
-        res.status(200).send("Pedido criado com sucesso")
-    }
-    catch (e) {
-        res.status(500).send({message: "Falha ao criar pedido", error: e})
-        console.error(e)
-    }
+  // req.fields = {id_usuario, id_grupo}
+  const {pedido} = req.fields
+  try{
+    await daoPedidos.create(pedido)
+    res.status(200).send("Pedido criado com sucesso")
+  }
+  catch (e) {
+    res.status(500).send({message: "Falha ao criar pedido", error: e})
+    console.error(e)
+  }
 }
 
 const respondePedido = async (req, res) => {
-    // req.body = {resposta: boolean}
-    // req.params = {id: id_pedido}
-    try{
-        const pedido = await daoPedidos.update({id: req.params.id}, {aceito: req.body.resposta, recusado: !req.body.resposta})
-        if(req.body.resposta) {
-            const id_usuario = pedido[0].id_usuario
-            const id_grupo = pedido[0].id_grupo
-            await daoRelacionamentoUsuariosGrupos.create({id_usuario, id_grupo})
-            res.status(200).send("Pedido aceito com sucesso")
-        } else {
-            res.status(200).send("Pedido recusado com sucesso")
-        }
+  // req.fields = {resposta: boolean}
+  // req.params = {id: id_pedido}
+  try{
+    const pedido = await daoPedidos.update({id: req.params.id}, {aceito: req.fields.resposta, recusado: !req.fields.resposta})
+    if(req.fields.resposta) {
+      const id_usuario = pedido[0].id_usuario
+      const id_grupo = pedido[0].id_grupo
+      await daoRelacionamentoUsuariosGrupos.create({id_usuario, id_grupo})
+      res.status(200).send("Pedido aceito com sucesso")
+    } else {
+      res.status(200).send("Pedido recusado com sucesso")
     }
-    catch (e) {
-        res.status(500).send({message: "Falha ao criar pedido", error: e})
-        console.error(e)
-    }
+  }
+  catch (e) {
+    res.status(500).send({message: "Falha ao criar pedido", error: e})
+    console.error(e)
+  }
 }
 
+const imgUpload = async (req, res) => {
+  const {path, name, type} = req.files[Object.keys(req.files)]
+  console.log(path, name, type)
+  const arquivo = await fs.readFile(path, 'base64', async (err, img)=>{
+    try {
+      console.log(img)
+      const resultado = await daoArquivos.create({arquivo: img, nome: name, tipo: type})
+      res.status(201).send({message: "Arquivo enviado com sucesso", id: resultado.id})
+    } catch (e) {
+      console.log(e)
+      res.status(500).send({message: "Falha ao enviar arquivo", error: e})
+    }
+  })
+}
+const imgDownload = async (req, res) => {
+  try {
+    let arquivo = await daoArquivos.findBy({id: req.params.id})
+    arquivo = arquivo[0]
+    const buffer = Buffer.from(arquivo.arquivo.toString('ascii'), 'base64')
+    res.set('Content-Type', arquivo.tipo)
+    res.set('Content-Length', buffer.length)
+    res.status(200).send(buffer);
+    
+  } catch (e) {
+    console.log(e)
+    res.status(500).send({message: "Falha ao buscar arquivo", error: e})
+  }
+}
 
 
 module.exports = {
@@ -103,6 +155,9 @@ module.exports = {
   gruposFind,
   gruposPatch,
   gruposDelete,
+  gruposFindByParticipante,
   criaPedido,
-  respondePedido
+  respondePedido,
+  imgUpload,
+  imgDownload
 }

@@ -76,7 +76,6 @@ class DaoTurmas {
       let binds = []
       let contador = 1
       try {
-        console.log('teste', filtro)
         const { rows } = await this.bd.query(`SELECT tabela.*, m.nome FROM ${process.env.DB_SCHEMA}.${this.tabela} tabela INNER JOIN ${process.env.DB_SCHEMA}.materias AS m ON m.codigo = tabela.codigo_materia WHERE id in (SELECT id_turma FROM ${process.env.DB_SCHEMA}.turmas_participantes WHERE matricula_participante=$1)`, [filtro.id_usuario])
         resolve(rows)
       } catch (error) {

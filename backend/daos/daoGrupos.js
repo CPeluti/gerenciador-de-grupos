@@ -74,6 +74,21 @@ class DaoGrupos {
       }
     })
   }
+  findByParticipante (matricula) {
+    return new Promise( async (resolve, reject) => {
+      if(!matricula){
+        reject(new Error('Matricula não informada'))
+      }
+      try {
+        const { rows } = await this.bd.query(`
+          SELECT * FROM gruposDoUsuario($1) 
+        `, [matricula])
+        resolve(rows)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
   update (filtro, dados) {
     return new Promise( async (resolve, reject) => {
       if(!filtro){
@@ -103,6 +118,12 @@ class DaoGrupos {
         return condicional
       })
       try {
+        console.log(`
+        UPDATE ${process.env.DB_SCHEMA}.${this.tabela}
+        SET ${bindsDados.join(', ')}
+        WHERE ${bindsFiltros.join(' AND ')}
+        RETURNING *;
+      `,  [...Object.values(dados), ...Object.values(filtro)])
         const { rows } = await this.bd.query(`
           UPDATE ${process.env.DB_SCHEMA}.${this.tabela}
           SET ${bindsDados.join(', ')}

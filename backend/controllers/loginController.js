@@ -7,9 +7,8 @@ const dao = new DaoUsuarios()
 const daoTurmas = new DaoTurmas()
 const daoParticipantes = new DaoParticipantes()
 const login = async (req, res) => {
-  console.log(req.body)
-  const usuario = req.body.usuario
-  const senha = req.body.senha
+  const usuario = req.fields.usuario
+  const senha = req.fields.senha
   try{
     const resultado = await dao.findBy({ usuario })
     const senhaDecryptBytes = crypto.AES.decrypt(resultado[0].senha, process.env.CRIPTSENHA);
@@ -20,7 +19,6 @@ const login = async (req, res) => {
 
       const minhasTurmas = await daoTurmas.findByParticipante({ id_usuario: resultado[0].matricula_participante })
       const participante = await daoParticipantes.findBy({ matricula: resultado[0].matricula_participante })
-      console.log('teste',minhasTurmas, participante)
 
       res.json({
         auth: true,
@@ -36,7 +34,6 @@ const login = async (req, res) => {
       })
       return
     }
-    console.log(resultado[0].senha, senha.toString())
     res.status(500).json({
       message: "login invalido"
     })
@@ -53,13 +50,13 @@ const login = async (req, res) => {
 const verify = async (req, res) => {
   const secret = process.env.JWT_SECRET
   
-  if(!req.body.token) {
+  if(!req.fields.token) {
     res.status(401).json({
       message: "Não autorizado"
     })
     return
   }  
-  const token = req.body.token
+  const token = req.fields.token
   jwt.verify(token, secret, (err, userInfo)=>{
     if(err) {
       res.status(401).json({

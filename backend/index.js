@@ -1,48 +1,56 @@
 require('dotenv').config()
 //Dao
-const {DaoMaterias} = require('./daos/daoMaterias')
-const daoMaterias = new DaoMaterias()
-const {DaoTurmas} = require('./daos/daoTurmas')
-const daoTurmas = new DaoTurmas()
-const {DaoParticipantes} = require('./daos/daoParticipantes')
-const daoParticipantes = new DaoParticipantes()
-const {DaoUsuarios} = require('./daos/daoUsuarios')
-const daoUsuarios = new DaoUsuarios()
-const {DaoMensagens} = require('./daos/daoMensagens')
-const daoMensagens = new DaoMensagens()
-const {DaoGrupos} = require('./daos/daoGrupos')
-const daoGrupos = new DaoGrupos()
-const {DaoArquivos} = require('./daos/daoArquivos')
-const daoArquivos = new DaoArquivos()
-const {DaoInteresses} = require('./daos/daoInteresses')
-const daoInteresses = new DaoInteresses()
-const {DaoRelacionamentoTurmasParticipantes} = require('./daos/daoRelacionamentoTurmasParticipantes')
-const daoRelacionamentoTurmasParticipantes = new DaoRelacionamentoTurmasParticipantes()
-const {DaoRelacionamentoUsuariosGrupos} = require('./daos/daoRelacionamentoUsuariosGrupos')
-const daoRelacionamentoUsuariosGrupos = new DaoRelacionamentoUsuariosGrupos()
-const {DaoRelacionamentoGruposInteresses} = require('./daos/daoRelacionamentoGruposInteresses')
-const daoRelacionamentoGruposInteresses = new DaoRelacionamentoGruposInteresses()
-const {DaoPedidos} = require('./daos/daoPedidos')
-const daoPedidos = new DaoPedidos()
+const
+  {DaoMaterias} = require('./daos/daoMaterias'),
+  daoMaterias = new DaoMaterias(),
+  {DaoTurmas} = require('./daos/daoTurmas'),
+  daoTurmas = new DaoTurmas(),
+  {DaoParticipantes} = require('./daos/daoParticipantes'),
+  daoParticipantes = new DaoParticipantes(),
+  {DaoUsuarios} = require('./daos/daoUsuarios'),
+  daoUsuarios = new DaoUsuarios(),
+  {DaoMensagens} = require('./daos/daoMensagens'),
+  daoMensagens = new DaoMensagens(),
+  {DaoGrupos} = require('./daos/daoGrupos'),
+  daoGrupos = new DaoGrupos(),
+  {DaoArquivos} = require('./daos/daoArquivos'),
+  daoArquivos = new DaoArquivos(),
+  {DaoInteresses} = require('./daos/daoInteresses'),
+  daoInteresses = new DaoInteresses(),
+  {DaoRelacionamentoTurmasParticipantes} = require('./daos/daoRelacionamentoTurmasParticipantes'),
+  daoRelacionamentoTurmasParticipantes = new DaoRelacionamentoTurmasParticipantes(),
+  {DaoRelacionamentoUsuariosGrupos} = require('./daos/daoRelacionamentoUsuariosGrupos'),
+  daoRelacionamentoUsuariosGrupos = new DaoRelacionamentoUsuariosGrupos(),
+  {DaoRelacionamentoGruposInteresses} = require('./daos/daoRelacionamentoGruposInteresses'),
+  daoRelacionamentoGruposInteresses = new DaoRelacionamentoGruposInteresses(),
+  {DaoPedidos} = require('./daos/daoPedidos'),
+  daoPedidos = new DaoPedidos()
 
 // Routes
-const login = require('./routes/login')
-const importRoute = require('./routes/import')
-const materiasRoute = require('./routes/materias')
-const turmasRoute = require('./routes/turmas')
-const gruposRoute = require('./routes/grupos')
-const participantesRoute = require('./routes/participantes')
-const usuariosRoute = require('./routes/usuarios')
-const interessesRoute = require('./routes/interesses')
+const
+  login = require('./routes/login'),
+  importRoute = require('./routes/import'),
+  materiasRoute = require('./routes/materias'),
+  turmasRoute = require('./routes/turmas'),
+  gruposRoute = require('./routes/grupos'),
+  participantesRoute = require('./routes/participantes'),
+  usuariosRoute = require('./routes/usuarios'),
+  interessesRoute = require('./routes/interesses')
 // Middlewares
 const {validateJwt} = require('./middlewares/jwtValidation')
 
 // App Config
-const express = require('express')
-const cors = require('cors')
-const app = express()
+const
+  express = require('express'),
+  cors = require('cors'),
+  throttle = require('express-throttle-bandwidth'),
+  formidableMiddleware = require('express-formidable'),
+  app = express()
+
 app.use(cors())
-app.use(express.json())
+// app.use(express.json())
+// app.use(throttle(1024*128))
+app.use(formidableMiddleware())
 
 // DB create tables
 async function CreateTables(){
@@ -65,7 +73,6 @@ CreateTables()
 
 // VarEnvs
 const PORT = process.env.PORT
-
 app.use('/login', login)
 app.use('/import', importRoute)
 app.use('/materias', materiasRoute)

@@ -13,6 +13,7 @@ class DaoArquivos {
           CREATE TABLE IF NOT EXISTS ${process.env.DB_SCHEMA}.${this.tabela} (
             id SERIAL PRIMARY KEY,
             imageName VARCHAR(255) NOT NULL,
+            tipo VARCHAR(70) NOT NULL,
             arquivo BYTEA NOT NULL
           );
         `)
@@ -22,16 +23,15 @@ class DaoArquivos {
       }
     })
   }
-  create (interesse) {
+  create (arquivo) {
     return new Promise( async (resolve, reject) => {
       try {
-        console.log(usuario)
         const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (arquivo)
-          VALUES ($1)
+          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (imageName, arquivo, tipo)
+          VALUES ($1, $2, $3)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [interesse.arquivo])
+        `, [arquivo.nome, arquivo.arquivo, arquivo.tipo])
         resolve(rows[0])
       } catch (error) {
         reject(error)

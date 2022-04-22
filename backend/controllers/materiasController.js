@@ -2,7 +2,7 @@ const {DaoMaterias} = require('../daos/daoMaterias')
 const dao = new DaoMaterias()
 
 const materiasCreate = async (req, res) => {
-  const materias = req.body.materias
+  const materias = req.fields.materias
   let materiasCriadas = []
   for (const element of materias) {
     try {
@@ -20,7 +20,6 @@ const materiasCreate = async (req, res) => {
 const materiasFind = async (req, res) => {
   const params = req.query
   try{
-    console.log(params)
     const materias = await dao.findBy(params)
     res.status(200).json(materias)
   } catch (error) {
@@ -29,7 +28,7 @@ const materiasFind = async (req, res) => {
 }
 
 const materiasPatch = async (req, res) => {
-  const dados = req.body
+  const dados = req.fields
   if(dados.length > 1) {
     res.status(500).json({message:"Somente um registro por vez"})
   }
