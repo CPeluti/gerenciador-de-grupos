@@ -20,6 +20,20 @@ export interface Participante {
   email: string;
   ocupacao: string;
 }
-export interface Meta {
-  totalCount: number;
+export interface Grupo {
+  id: number;
+  nome: string;
+  descricao: string;
+  criado_por: string;
+  semestre: string;
+  turma: string;
+  materia: string;
+  codigo_materia: string;
+  id_imagem: number;
+  interesses: object[];
+}
+
+export interface Interesse {
+  id: number;
+  interesse: string;
 }

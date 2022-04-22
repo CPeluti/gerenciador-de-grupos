@@ -58,23 +58,24 @@
     
 </template>
 <script lang="ts" setup>
-    import tabela from "components/Table.vue"
-    import {ref, reactive, onBeforeMount, watch} from 'vue'
+    import {ref, onMounted, watch} from 'vue'
     import {useQuasar} from 'quasar'
     import axios from 'axios' 
-    import { Materia } from 'components/models';
+    import { gruposStore } from 'stores/grupos-store';
     const $q = useQuasar()
+    const store = gruposStore();
     
+    const {criaGrupo, filtraMateriasJaExistentes} = store
     const minhasTurmas = ref([])
     const interesses = ref([])
     const interessesEscolhidos = ref([])
     const turma = ref()
     const nome = ref()
     const descricao = ref()
-    const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+    const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
     const modal = ref(false)
-    onBeforeMount(async ()=>{
-        const todosInteresses = await axios.get("http://localhost:3030/interesses")
+    onMounted(async ()=>{
+        const todosInteresses = await axios.get('http://localhost:3030/interesses')
         interesses.value = todosInteresses.data.map(el=>{
             return {
                 label: el.interesse,
@@ -87,33 +88,33 @@
                 value: el.id
             }
         })
+        minhasTurmas.value = filtraMateriasJaExistentes(minhasTurmas.value)
     })
     const criaGrupos = async () => {
-        const grupo = {
-            nome: nome.value,
-            descricao: descricao.value,
-            turma_id: turma.value,
-            criado_por: userInfo.id
-        }
         try{
-            await axios.post("http://localhost:3030/grupos", {grupo, interesses: interessesEscolhidos.value})
+            await criaGrupo({
+                nome: nome.value,
+                descricao: descricao.value,
+                turma_id: turma.value,
+                criado_por: userInfo.id
+            }, interessesEscolhidos.value)
             $q.notify({
                 message: 'Grupo criado com sucesso',
                 color: 'positive'
             })
-        }
-        catch(err){
+        } catch (e) {
             $q.notify({
-                message: 'Falha ao criar grupo.',
-                color: 'negative'
+                color: 'negative',
+                message: 'Erro ao criar grupo',
+                position: 'top'
             })
-            console.log(err)
         }
+        
     }
     const limpaCampos = () => {
-        nome.value = ""
-        descricao.value = ""
-        turma.value = ""
+        nome.value = ''
+        descricao.value = ''
+        turma.value = ''
         interessesEscolhidos.value = []
     }
     watch(modal, (value)=>{
