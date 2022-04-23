@@ -5,6 +5,7 @@ const dao = new DaoUsuarios()
 
 const usuariosCreate = async (req, res) => {
   var cipherPassword = crypto.AES.encrypt(req.fields.senha, process.env.CRIPTSENHA)
+  console.log(req.fields)
   const matricula = req.fields.matricula
   const usuario = {
     usuario: matricula,

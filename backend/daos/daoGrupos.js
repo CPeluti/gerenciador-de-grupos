@@ -1,5 +1,6 @@
 const {pool} = require('../postgres')
 const format = require('pg-format')
+const { log } = require('console')
 
 class DaoGrupos {
   constructor () {
@@ -80,8 +81,9 @@ class DaoGrupos {
         reject(new Error('Matricula não informada'))
       }
       try {
+        console.log('matricula', matricula)
         const { rows } = await this.bd.query(`
-          SELECT * FROM gruposDoUsuario($1) 
+          SELECT * FROM ${process.env.DB_SCHEMA}.gruposDoUsuario($1) 
         `, [matricula])
         resolve(rows)
       } catch (error) {

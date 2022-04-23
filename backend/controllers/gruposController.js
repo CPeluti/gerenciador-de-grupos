@@ -2,8 +2,6 @@ const {DaoGrupos} = require('../daos/daoGrupos')
 const {DaoPedidos} = require('../daos/daoPedidos')
 const {DaoRelacionamentoUsuariosGrupos} = require('../daos/daoRelacionamentoUsuariosGrupos')
 const {DaoRelacionamentoGruposInteresses} = require('../daos/daoRelacionamentoGruposInteresses')
-const crypto = require("crypto-js")
-const formidable = require('formidable')
 const fs = require('fs')
 const { DaoArquivos } = require('../daos/daoArquivos')
 
@@ -73,6 +71,7 @@ const gruposDelete = async (req, res) => {
 
 const gruposFindByParticipante = async (req, res) => {
   const matricula = req.params.id
+  console.log(matricula)
   try {
     const grupos = await dao.findByParticipante(matricula)
     for (grupo of grupos) {
@@ -142,7 +141,6 @@ const imgDownload = async (req, res) => {
     res.set('Content-Type', arquivo.tipo)
     res.set('Content-Length', buffer.length)
     res.status(200).send(buffer);
-    
   } catch (e) {
     console.log(e)
     res.status(500).send({message: "Falha ao buscar arquivo", error: e})
