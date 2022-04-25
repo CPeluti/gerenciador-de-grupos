@@ -1,10 +1,11 @@
 const express = require('express')
-const {gruposCreate, gruposFind, gruposFindByParticipante, gruposPatch, gruposDelete, criaPedido, respondePedido, imgUpload, imgDownload} = require('../controllers/gruposController')
+const {gruposCreate, gruposFind, gruposFindAll, gruposFindByParticipante, gruposPatch, gruposDelete, criaPedido, respondePedido, imgUpload, imgDownload} = require('../controllers/gruposController')
 
 const router = express.Router();
 
 router.post('/', gruposCreate);
 router.get('/', gruposFind);
+router.get('/all', gruposFindAll);
 router.patch('/:id', gruposPatch);
 router.delete('/:id', gruposDelete);
 router.get('/participante/:id', gruposFindByParticipante);	

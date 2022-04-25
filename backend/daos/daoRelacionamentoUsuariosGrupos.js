@@ -106,6 +106,16 @@ class DaoRelacionamentoUsuariosGrupos {
       }
     })
   }
+  findUserByGrupo (grupo) {
+    return new Promise( async (resolve, reject) => {
+      try {
+        const { rows } = await this.bd.query(`SELECT u.id, u.usuario, u.matricula_participante FROM ${process.env.DB_SCHEMA}.usuarios as u INNER JOIN ${process.env.DB_SCHEMA}.usuarios_grupos AS ug ON ug.id_usuario = u.id WHERE ug.id_grupo = $1;`, [grupo])
+        resolve(rows)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
   delete (id) {
     return new Promise( async (resolve, reject) => {
       if(!id){

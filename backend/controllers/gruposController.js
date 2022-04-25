@@ -2,10 +2,12 @@ const {DaoGrupos} = require('../daos/daoGrupos')
 const {DaoPedidos} = require('../daos/daoPedidos')
 const {DaoRelacionamentoUsuariosGrupos} = require('../daos/daoRelacionamentoUsuariosGrupos')
 const {DaoRelacionamentoGruposInteresses} = require('../daos/daoRelacionamentoGruposInteresses')
+const {DaoUsuarios} = require('../daos/daoUsuarios')
 const fs = require('fs')
 const { DaoArquivos } = require('../daos/daoArquivos')
 
 const dao = new DaoGrupos()
+const daoUsuarios = new DaoUsuarios()
 const daoPedidos = new DaoPedidos()
 const daoRelacionamentoUsuariosGrupos = new DaoRelacionamentoUsuariosGrupos()
 const daoRelacionamentoGruposInteresses = new DaoRelacionamentoGruposInteresses()
@@ -86,6 +88,22 @@ const gruposFindByParticipante = async (req, res) => {
   }
 }
 
+const gruposFindAll = async (req, res) => {
+  try {
+    const grupos = await dao.findAll()
+    for (grupo of grupos) {
+      const interesses = await daoRelacionamentoGruposInteresses.findInteresseBy({id_grupo: grupo.id}) 
+      grupo.interesses = interesses
+      const usuarios = await daoRelacionamentoUsuariosGrupos.findUserByGrupo(grupo.id)
+      grupo.usuarios = usuarios
+    }
+    res.status(200).json(grupos)
+  } catch (e) {
+    res.status(500).send({message: "Falha ao buscar grupos", error: e})
+    console.error(e)
+  }
+}
+
 const criaPedido = async (req, res) => {
   // req.fields = {id_usuario, id_grupo}
   const {pedido} = req.fields
@@ -153,6 +171,7 @@ module.exports = {
   gruposFind,
   gruposPatch,
   gruposDelete,
+  gruposFindAll,
   gruposFindByParticipante,
   criaPedido,
   respondePedido,

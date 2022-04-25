@@ -64,4 +64,23 @@ END;
 $$ LANGUAGE plpgsql;
 
 select * from gruposDoUsuario('190085312');
+http://localhost:3030/grupos/participante/190085312
+
+
+drop view allgroups;
+
+CREATE VIEW allGroups AS
+SELECT g.*, 
+	t.codigo as codigo_turma, 
+	t.semestre as semestre_turma, 
+	t.horario as horario_turma, 
+	m.codigo as codigo_materia, 
+	m.nome as nome_materia 
+FROM grupos as g
+inner join turmas as t on t.id = g.turma_id
+inner join materias as m on m.codigo = t.codigo_materia
+where g.ativo = true;
+
+select * from allgroups;
+http://localhost:3030/grupos/all
 

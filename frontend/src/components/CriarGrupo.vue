@@ -1,6 +1,9 @@
 <template>
-    <div class="row q-pa-sm q-gutter-md">
-        <q-btn @click="modal=true" label="Criar Grupo" color="secondary" rounded/>
+    <div>
+      <div>
+        <q-btn @click="modal=true" class="grupo" color="secondary" icon="add"/>
+        <q-tooltip anchor="center right" self="center left"><strong class="tooltip">Criar Grupo</strong></q-tooltip>
+      </div>
         <q-dialog v-model="modal" class="q-pa-md">
             <q-card>
                 <q-card-section>
@@ -55,16 +58,16 @@
             </q-card>
         </q-dialog>
     </div>
-    
+
 </template>
 <script lang="ts" setup>
     import {ref, onMounted, watch} from 'vue'
     import {useQuasar} from 'quasar'
-    import axios from 'axios' 
+    import axios from 'axios'
     import { gruposStore } from 'stores/grupos-store';
     const $q = useQuasar()
     const store = gruposStore();
-    
+
     const {criaGrupo, filtraMateriasJaExistentes} = store
     const minhasTurmas = ref([])
     const interesses = ref([])
@@ -109,7 +112,7 @@
                 position: 'top'
             })
         }
-        
+
     }
     const limpaCampos = () => {
         nome.value = ''
@@ -123,3 +126,26 @@
         }
     })
 </script>
+
+<style>
+  .tooltip{
+    font-size: 1.1em;
+  }
+  .grupo {
+    width: 2em;
+    height: 2em;
+    min-height: 2em;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #2196f3;
+    border-radius: 50%;
+    background-color: antiquewhite;
+  }
+  .nome {
+    opacity: 0%;
+  }
+  .nome:hover{
+    cursor: pointer;
+    opacity: 100%;
+  }
+</style>

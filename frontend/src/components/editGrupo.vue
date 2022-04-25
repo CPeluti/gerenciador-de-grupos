@@ -67,7 +67,7 @@
                             @click="confirmarFinalizacao"
                         />
                     </q-form>
-                    
+
                 </q-card-section>
                 <q-card-actions class="flex justify-between">
                     <q-btn label="Cancelar" color="negative" rounded v-close-popup/>
@@ -92,7 +92,7 @@
             </q-card>
         </q-dialog>
     </div>
-    
+
 </template>
 <script lang="ts" setup>
     import {ref, watch} from 'vue'
@@ -105,8 +105,8 @@ import { Interesse } from './models';
     const $q = useQuasar()
     const store = gruposStore();
     const router = useRoute()
-    
-    const {editGrupo, buscaGrupos, filtraMateriasJaExistentes, refreshGrupos} = store
+
+    const {editGrupo, filtraMateriasJaExistentes, refreshGrupos} = store
     const {grupo} = storeToRefs(store);
     const minhasTurmas = ref([])
     const interessesEscolhidos = ref([])
@@ -179,7 +179,7 @@ import { Interesse } from './models';
                 position: 'top'
             })
         }
-        
+
     }
     const limpaCampos = () => {
         nome.value = ''
@@ -194,7 +194,7 @@ import { Interesse } from './models';
     })
 </script>
 
-<style>
+<style scoped>
     .grupo {
         width: 200px;
         height: 200px;

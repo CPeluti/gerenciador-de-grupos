@@ -154,5 +154,17 @@ class DaoGrupos {
       }
     })
   }
+  findAll(){
+    return new Promise( async (resolve, reject) => {
+      try {
+        const { rows } = await this.bd.query(`
+          SELECT * FROM ${process.env.DB_SCHEMA}.allGroups
+        `)
+        resolve(rows)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
 }
 module.exports = {DaoGrupos}

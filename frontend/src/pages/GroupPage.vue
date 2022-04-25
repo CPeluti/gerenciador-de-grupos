@@ -9,14 +9,14 @@
     import { useRoute } from 'vue-router'
     import {onMounted} from 'vue'
     import { storeToRefs } from 'pinia'
-    import { gruposStore } from "stores/grupos-store";
+    import { gruposStore } from 'stores/grupos-store';
     // Data
     const store = gruposStore();
     const {grupo} = storeToRefs(store);
     const router = useRoute()
     // Data
-    onMounted(async ()=>{
-        await store.buscaGrupos()
-        store.grupo = await store.filtraGruposById(router.params.id)
-    })
+    // onMounted(async ()=>{
+    //     await store.buscaGrupos()
+    //     store.grupo = await store.filtraGruposById(router.params.id)
+    // })
 </script>
