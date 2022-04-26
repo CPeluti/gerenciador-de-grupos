@@ -1,5 +1,6 @@
 const {pool} = require('../postgres')
 const format = require('pg-format')
+const { env } = require('process')
 
 class DaoPedidos {
   constructor () {
@@ -14,8 +15,7 @@ class DaoPedidos {
             id SERIAL PRIMARY KEY,
             id_usuario INT NOT NULL,
             id_grupo INT NOT NULL,
-            aceito BOOLEAN NOT NULL,
-            recusado BOOLEAN NOT NULL,
+            aceito BOOLEAN,
             CONSTRAINT fk_id_usuario
               FOREIGN KEY(id_usuario)
                 REFERENCES ${process.env.DB_SCHEMA}.usuarios(id) ON DELETE CASCADE,
@@ -35,10 +35,10 @@ class DaoPedidos {
       try {
         const { rows } = await this.bd.query(`
           INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (id_usuario, id_grupo)
-          VALUES ($1, $2, $3)
+          VALUES ($1, $2)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [pedido.id_usuario, pedido.id_grupo, 0])
+        `, [pedido.id_usuario, pedido.id_grupo])
         resolve(rows[0])
       } catch (error) {
         reject(error)
@@ -50,17 +50,51 @@ class DaoPedidos {
       let binds = []
       let contador = 1
       Object.keys(filtros).forEach(key => {
-        let sqlParcial = `%I = `
-        sqlParcial = format(sqlParcial, key)
-        binds.push(sqlParcial)
+        if(filtros[key]===null){
+          let sqlParcial = `%I IS NULL`
+          sqlParcial = format(sqlParcial, key)
+          binds.push(sqlParcial)
+        } else {
+          let sqlParcial = `%I = `
+          sqlParcial = format(sqlParcial, key)
+          binds.push(sqlParcial)
+        }
       })
       binds = binds.map(item => {
-        const condicional = item+`$${contador}`
-        contador++
-        return condicional
+        if(!item.includes('IS')){
+          const condicional = item+`$${contador}`
+          contador++
+          return condicional
+        } else {
+          const condicional = item
+          return condicional
+        }
       })
+      const variaveis = [...Object.values(filtros)].filter(item => item!==null)
       try {
-        const { rows } = await this.bd.query(`SELECT * FROM ${process.env.DB_SCHEMA}.${this.tabela} WHERE ${binds.join(' AND ')};`, [...Object.values(filtros)])
+        const { rows } = await this.bd.query(`
+          SELECT p.*, u.matricula_participante, pa.nome FROM ${process.env.DB_SCHEMA}.${this.tabela} AS p
+          INNER JOIN ${process.env.DB_SCHEMA}.usuarios AS u ON p.id_usuario = u.id
+          INNER JOIN ${process.env.DB_SCHEMA}.participantes as pa ON pa.matricula = u.matricula_participante
+          WHERE ${binds.join(' AND ')};
+        `, variaveis)
+        resolve(rows)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+  findByMatricula (matricula){
+    return new Promise( async (resolve, reject) => {
+      if(!matricula){
+        reject(new Error('Filtro não informado'))
+      }
+      try {
+        const { rows } = await this.bd.query(`
+          SELECT * FROM ${process.env.DB_SCHEMA}.${this.tabela} as p
+          INNER JOIN ${process.env.DB_SCHEMA}.usuarios AS u ON p.id_usuario = u.id
+          WHERE u.matricula_participante = $1 and p.aceito is null;
+        `, [matricula])
         resolve(rows)
       } catch (error) {
         reject(error)

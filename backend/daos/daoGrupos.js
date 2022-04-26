@@ -1,6 +1,5 @@
 const {pool} = require('../postgres')
 const format = require('pg-format')
-const { log } = require('console')
 
 class DaoGrupos {
   constructor () {
@@ -81,9 +80,8 @@ class DaoGrupos {
         reject(new Error('Matricula não informada'))
       }
       try {
-        console.log('matricula', matricula)
         const { rows } = await this.bd.query(`
-          SELECT * FROM ${process.env.DB_SCHEMA}.gruposDoUsuario($1) 
+          SELECT * FROM gruposDoUsuario($1) ;
         `, [matricula])
         resolve(rows)
       } catch (error) {
@@ -120,12 +118,6 @@ class DaoGrupos {
         return condicional
       })
       try {
-        console.log(`
-        UPDATE ${process.env.DB_SCHEMA}.${this.tabela}
-        SET ${bindsDados.join(', ')}
-        WHERE ${bindsFiltros.join(' AND ')}
-        RETURNING *;
-      `,  [...Object.values(dados), ...Object.values(filtro)])
         const { rows } = await this.bd.query(`
           UPDATE ${process.env.DB_SCHEMA}.${this.tabela}
           SET ${bindsDados.join(', ')}

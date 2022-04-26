@@ -56,7 +56,7 @@ BEGIN
  	WHERE grupos.grupos.id in (
 	 	select ug.id_grupo from grupos.usuarios_grupos as ug 
 	 	inner join grupos.usuarios as u on u.id = ug.id_usuario 
-	 	where u.matricula_participante = '190085312'
+	 	where u.matricula_participante = matricula
  	);
  	
 END;

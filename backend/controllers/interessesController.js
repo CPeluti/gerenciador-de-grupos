@@ -3,7 +3,6 @@ const dao = new DaoInteresses()
 
 const interessesCreate = async (req, res) => {
   const interesses = req.fields.interesses
-  console.log(interesses)
   let interessesCriadas = []
   for (const element of interesses) {
     try {

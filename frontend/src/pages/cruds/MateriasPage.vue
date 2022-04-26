@@ -18,7 +18,7 @@
                             :disable="editMode"
                             placeholder="Digite o código da materia"
                         />
-                        <q-input 
+                        <q-input
                             class="col-12"
                             outlined
                             v-model="nome"
@@ -53,11 +53,11 @@
                         />
                     </q-form>
                 </q-card-section>
-                
+
             </q-card>
         </div>
         <div class="col-5" >
-            <tabela 
+            <tabela
                 :columns="columnsTabela"
                 :rows="materias.value"
                 row-key="codigo"
@@ -67,13 +67,13 @@
             />
         </div>
     </div>
-    
+
 </template>
 <script lang="ts" setup>
-    import tabela from "components/Table.vue"
+    import tabela from 'components/Table.vue'
     import {ref, reactive, onBeforeMount, watch} from 'vue'
     import {useQuasar} from 'quasar'
-    import axios from 'axios' 
+    import axios from 'axios'
     import { Materia } from 'components/models';
     // Data
     const form = ref(null)
@@ -82,9 +82,9 @@
     const nome = ref()
     const editMode = ref(false)
     const codigoEdit = ref()
-    
+
     const columnsTabela = ref([
-        {name: 'codigo', align:'center', label: 'Código', field: 'codigo'}, 
+        {name: 'codigo', align:'center', label: 'Código', field: 'codigo'},
         {name: 'departamento', align: 'center', label: 'Departamento', field: 'departamento'},
         {name: 'nome', align:'center', label: 'Nome', field: 'nome'},
         {name: 'editar', align:'center', label: 'Editar', field: 'editar'},
@@ -147,8 +147,7 @@
                 message: 'Erro ao buscar as materias'
             })
         }
-        
-        console.log(materias)
+
     }
     const editMateria = async () => {
         try{
@@ -157,12 +156,11 @@
                 nome: nome.value
             })
             editMode.value = false
-            console.log(res)
             buscaMaterias()
         } catch (e) {
             console.error(e)
         }
-        
+
     }
     const excludeMateria =  (row: Materia) => {
         $q.dialog({
@@ -178,8 +176,8 @@
                 console.error(e)
             }
         })
-        
-        
+
+
     }
     const changeToEditMode = (row: Materia) => {
         editMode.value = !editMode.value
@@ -190,7 +188,6 @@
         //     codigo: row.codigo,
         //     nome: row.nome
         // })
-        console.log(editMode.value)
     }
     // Life cycle hooks
     onBeforeMount(() => {

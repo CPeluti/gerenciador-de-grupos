@@ -17,7 +17,7 @@
                             label="Matricula"
                             placeholder="Digite a matricula do participante"
                         />
-                        <q-input 
+                        <q-input
                             class="col-12"
                             outlined
                             v-model="nome"
@@ -26,7 +26,7 @@
                             label="Nome"
                             placeholder="Digite o nome do participante"
                         />
-                        <q-input 
+                        <q-input
                             class="col-12"
                             outlined
                             v-model="email"
@@ -35,7 +35,7 @@
                             label="E-Mail"
                             placeholder="Digite o email do participante"
                         />
-                        <q-select 
+                        <q-select
                             class="col-12"
                             outlined
                             v-model="ocupacao"
@@ -71,11 +71,11 @@
                         />
                     </q-form>
                 </q-card-section>
-                
+
             </q-card>
         </div>
         <div class="col-5" >
-            <tabela 
+            <tabela
                 :columns="columnsTabela"
                 :rows="participantes.value"
                 row-key="codigo"
@@ -85,13 +85,13 @@
             />
         </div>
     </div>
-    
+
 </template>
 <script lang="ts" setup>
-    import tabela from "components/Table.vue"
+    import tabela from 'components/Table.vue'
     import {ref, reactive, onBeforeMount, watch} from 'vue'
     import {useQuasar} from 'quasar'
-    import axios from 'axios' 
+    import axios from 'axios'
     import { Participante } from 'components/models';
     // Data
     const form = ref(null)
@@ -102,9 +102,9 @@
     const ocupacao = ref()
     const editMode = ref(false)
     const codigoEdit = ref()
-    
+
     const columnsTabela = ref([
-        {name: 'matricula', align:'center', label: 'Matricula', field: 'matricula'}, 
+        {name: 'matricula', align:'center', label: 'Matricula', field: 'matricula'},
         {name: 'nome', align: 'center', label: 'Nome', field: 'nome'},
         {name: 'email', align:'center', label: 'E-Mail', field: 'email'},
         {name: 'ocupacao', align:'center', label: 'Ocupação', field: 'ocupacao'},
@@ -175,8 +175,7 @@
                 message: 'Erro ao buscar os participantes'
             })
         }
-        
-        console.log(participantes)
+
     }
     const editParticipante = async () => {
         try{
@@ -187,12 +186,11 @@
                 ocupacao: ocupacao.value,
             })
             editMode.value = false
-            console.log(res)
             buscaParticipantes()
         } catch (e) {
             console.error(e)
         }
-        
+
     }
     const excludeParticipante =  (row: Participante) => {
         $q.dialog({
@@ -208,8 +206,8 @@
                 console.error(e)
             }
         })
-        
-        
+
+
     }
     const changeToEditMode = (row: Participante) => {
         editMode.value = !editMode.value
@@ -222,7 +220,6 @@
         //     codigo: row.codigo,
         //     nome: row.nome
         // })
-        console.log(editMode.value)
     }
     // Life cycle hooks
     onBeforeMount(async () => {

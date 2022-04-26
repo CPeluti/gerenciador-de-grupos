@@ -1,23 +1,27 @@
 const {pool} = require('../postgres')
 const format = require('pg-format')
+const { env } = require('process')
 
-class DaoMaterias {
+class DaoAvaliacoes {
   constructor () {
-    this.tabela = 'materias'
+    this.tabela = 'avaliacoes'
     this.bd = pool
   }
   createTable() {
     return new Promise( async (resolve, reject) => {
       try {
-        //TODO: arrumar tamanho do codigo
         const { rows } = await this.bd.query(`
           CREATE TABLE IF NOT EXISTS ${process.env.DB_SCHEMA}.${this.tabela} (
-            codigo VARCHAR(15) PRIMARY KEY,
-            nome VARCHAR(255) NOT NULL,
-            id_departamento INT,
-            CONSTRAINT fk_id_departamento
-              FOREIGN KEY(id_departamento)
-                REFERENCES ${process.env.DB_SCHEMA}.departamentos(id) ON DELETE CASCADE
+            id SERIAL PRIMARY KEY,
+            id_usuario INT NOT NULL,
+            id_grupo INT NOT NULL,
+            avaliacao INT,
+            CONSTRAINT fk_id_usuario
+              FOREIGN KEY(id_usuario)
+                REFERENCES ${process.env.DB_SCHEMA}.usuarios(id) ON DELETE CASCADE,
+            CONSTRAINT fk_id_grupo
+              FOREIGN KEY(id_grupo)
+                REFERENCES ${process.env.DB_SCHEMA}.grupos(id) ON DELETE CASCADE
           );
         `)
         resolve(rows[0])
@@ -26,15 +30,15 @@ class DaoMaterias {
       }
     })
   }
-  create (materia) {
+  create (avaliacao) {
     return new Promise( async (resolve, reject) => {
       try {
         const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (codigo, nome)
+          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (id_usuario, id_grupo)
           VALUES ($1, $2)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [materia.codigo, materia.nome])
+        `, [avaliacao.id_usuario, avaliacao.id_grupo])
         resolve(rows[0])
       } catch (error) {
         reject(error)
@@ -46,17 +50,51 @@ class DaoMaterias {
       let binds = []
       let contador = 1
       Object.keys(filtros).forEach(key => {
-        let sqlParcial = `%I = `
-        sqlParcial = format(sqlParcial, key)
-        binds.push(sqlParcial)
+        if(filtros[key]===null){
+          let sqlParcial = `%I IS NULL`
+          sqlParcial = format(sqlParcial, key)
+          binds.push(sqlParcial)
+        } else {
+          let sqlParcial = `%I = `
+          sqlParcial = format(sqlParcial, key)
+          binds.push(sqlParcial)
+        }
       })
       binds = binds.map(item => {
-        const condicional = item+`$${contador}`
-        contador++
-        return condicional
+        if(!item.includes('IS')){
+          const condicional = item+`$${contador}`
+          contador++
+          return condicional
+        } else {
+          const condicional = item
+          return condicional
+        }
       })
+      const variaveis = [...Object.values(filtros)].filter(item => item!==null)
       try {
-        const { rows } = await this.bd.query(`SELECT * FROM ${process.env.DB_SCHEMA}.${this.tabela} ${binds.length? "WHERE" : ""} ${binds.join(' AND ')};`, [...Object.values(filtros)])
+        const { rows } = await this.bd.query(`
+          SELECT p.*, u.matricula_participante, pa.nome FROM ${process.env.DB_SCHEMA}.${this.tabela} AS p
+          INNER JOIN ${process.env.DB_SCHEMA}.usuarios AS u ON p.id_usuario = u.id
+          INNER JOIN ${process.env.DB_SCHEMA}.participantes as pa ON pa.matricula = u.matricula_participante
+          WHERE ${binds.join(' AND ')};
+        `, variaveis)
+        resolve(rows)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+  findByMatricula (matricula){
+    return new Promise( async (resolve, reject) => {
+      if(!matricula){
+        reject(new Error('Filtro não informado'))
+      }
+      try {
+        const { rows } = await this.bd.query(`
+          SELECT * FROM ${process.env.DB_SCHEMA}.${this.tabela} as p
+          INNER JOIN ${process.env.DB_SCHEMA}.usuarios AS u ON p.id_usuario = u.id
+          WHERE u.matricula_participante = $1 and p.aceito is null;
+        `, [matricula])
         resolve(rows)
       } catch (error) {
         reject(error)
@@ -112,7 +150,7 @@ class DaoMaterias {
       try {
         const { rows } = await this.bd.query(`
          DELETE FROM ${process.env.DB_SCHEMA}.${this.tabela}
-         WHERE CODIGO = $1
+         WHERE id = $1
         `, [id])
         resolve(rows[0])
       } catch (error) {
@@ -121,4 +159,4 @@ class DaoMaterias {
     })
   }
 }
-module.exports = {DaoMaterias}
+module.exports = {DaoAvaliacoes}

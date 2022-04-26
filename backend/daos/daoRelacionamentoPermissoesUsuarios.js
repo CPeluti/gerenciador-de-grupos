@@ -1,23 +1,26 @@
 const {pool} = require('../postgres')
 const format = require('pg-format')
+const e = require('express')
 
-class DaoMaterias {
+class DaoRelacionamentoPermissoesUsuarios {
   constructor () {
-    this.tabela = 'materias'
+    this.tabela = 'permissoes_usuarios'
     this.bd = pool
   }
   createTable() {
     return new Promise( async (resolve, reject) => {
       try {
-        //TODO: arrumar tamanho do codigo
         const { rows } = await this.bd.query(`
           CREATE TABLE IF NOT EXISTS ${process.env.DB_SCHEMA}.${this.tabela} (
-            codigo VARCHAR(15) PRIMARY KEY,
-            nome VARCHAR(255) NOT NULL,
-            id_departamento INT,
-            CONSTRAINT fk_id_departamento
-              FOREIGN KEY(id_departamento)
-                REFERENCES ${process.env.DB_SCHEMA}.departamentos(id) ON DELETE CASCADE
+            id SERIAL PRIMARY KEY,
+            id_usuario INT NOT NULL,
+            id_permissao INT NOT NULL,
+            CONSTRAINT fk_id_usuario
+              FOREIGN KEY(id_usuario)
+                REFERENCES ${process.env.DB_SCHEMA}.usuarios(id) ON DELETE CASCADE,
+            CONSTRAINT fk_id_permissao
+              FOREIGN KEY(id_permissao)
+                REFERENCES ${process.env.DB_SCHEMA}.permissoes(id) ON DELETE CASCADE
           );
         `)
         resolve(rows[0])
@@ -26,15 +29,15 @@ class DaoMaterias {
       }
     })
   }
-  create (materia) {
+  create (relacionamento) {
     return new Promise( async (resolve, reject) => {
       try {
         const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (codigo, nome)
+          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (id_usuario, id_permissao)
           VALUES ($1, $2)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [materia.codigo, materia.nome])
+        `, [relacionamento.id_usuario, relacionamento.id_permissao])
         resolve(rows[0])
       } catch (error) {
         reject(error)
@@ -56,7 +59,7 @@ class DaoMaterias {
         return condicional
       })
       try {
-        const { rows } = await this.bd.query(`SELECT * FROM ${process.env.DB_SCHEMA}.${this.tabela} ${binds.length? "WHERE" : ""} ${binds.join(' AND ')};`, [...Object.values(filtros)])
+        const { rows } = await this.bd.query(`SELECT * FROM ${process.env.DB_SCHEMA}.${this.tabela} WHERE ${binds.join(' AND ')};`, [...Object.values(filtros)])
         resolve(rows)
       } catch (error) {
         reject(error)
@@ -121,4 +124,4 @@ class DaoMaterias {
     })
   }
 }
-module.exports = {DaoMaterias}
+module.exports = {DaoRelacionamentoPermissoesUsuarios}

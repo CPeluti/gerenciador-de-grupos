@@ -24,7 +24,15 @@ const
   {DaoRelacionamentoGruposInteresses} = require('./daos/daoRelacionamentoGruposInteresses'),
   daoRelacionamentoGruposInteresses = new DaoRelacionamentoGruposInteresses(),
   {DaoPedidos} = require('./daos/daoPedidos'),
-  daoPedidos = new DaoPedidos()
+  daoPedidos = new DaoPedidos(),
+  {DaoDepartamentos} = require('./daos/daoDepartamentos'),
+  daoDepartamentos = new DaoDepartamentos(),
+  {DaoRelacionamentoPermissoesUsuarios} = require('./daos/daoRelacionamentoPermissoesUsuarios'),
+  daoRelacionamentoPermissoesUsuarios = new DaoRelacionamentoPermissoesUsuarios(),
+  {DaoPermissoes} = require('./daos/daoPermissoes'),
+  daoPermissoes = new DaoPermissoes(),
+  {DaoAvaliacoes} = require('./daos/daoAvaliacoes'),
+  daoAvaliacoes = new DaoAvaliacoes()
 
 // Routes
 const
@@ -35,7 +43,8 @@ const
   gruposRoute = require('./routes/grupos'),
   participantesRoute = require('./routes/participantes'),
   usuariosRoute = require('./routes/usuarios'),
-  interessesRoute = require('./routes/interesses')
+  interessesRoute = require('./routes/interesses'),
+  departamentosRoute = require('./routes/departamentos')
 // Middlewares
 const {validateJwt} = require('./middlewares/jwtValidation')
 
@@ -54,6 +63,7 @@ app.use(formidableMiddleware())
 
 // DB create tables
 async function CreateTables(){
+  await daoDepartamentos.createTable()
   await daoMaterias.createTable()
   await daoTurmas.createTable()
   await daoParticipantes.createTable()
@@ -66,6 +76,9 @@ async function CreateTables(){
   await daoInteresses.createTable()
   await daoRelacionamentoGruposInteresses.createTable()
   await daoPedidos.createTable()
+  await daoPermissoes.createTable()
+  await daoRelacionamentoPermissoesUsuarios.createTable()
+  await daoAvaliacoes.createTable()
 }
 
 CreateTables()
@@ -81,6 +94,7 @@ app.use('/grupos', gruposRoute)
 app.use('/participantes', participantesRoute)
 app.use('/usuarios', usuariosRoute)
 app.use('/interesses', interessesRoute)
+app.use('/departamentos', departamentosRoute)
 
 
 app.get('/', validateJwt, async (req, res) => {

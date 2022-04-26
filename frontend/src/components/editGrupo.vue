@@ -101,7 +101,7 @@
     import { useRoute } from 'vue-router';
     import { gruposStore } from 'stores/grupos-store';
     import {storeToRefs} from 'pinia'
-import { Interesse } from './models';
+    import { Interesse } from './models';
     const $q = useQuasar()
     const store = gruposStore();
     const router = useRoute()
@@ -119,17 +119,13 @@ import { Interesse } from './models';
     const modal = ref(false)
     const modalImg = ref(false)
     const editModal = async () => {
-        console.log('teste', grupo.value)
         if(grupo.value.id_imagem){
-            const {data: imgTeste} =`http://localhost:3030/grupos/download/${grupo.value.id_imagem}`
-            console.log(imgTeste)
             img.value = `http://localhost:3030/grupos/download/${grupo.value.id_imagem}`
             imgId.value = grupo.value.id_imagem
         }
         turma.value = grupo.value.materia
         nome.value = grupo.value.nome
         descricao.value = grupo.value.descricao
-        console.log(grupo.value.interesses)
         interessesEscolhidos.value = grupo.value.interesses.map(i => {
             return {
                 label: i.interesse,
@@ -153,29 +149,28 @@ import { Interesse } from './models';
         // }
     }
     const uploaded = async (info) => {
-        console.log(info)
         const json = JSON.parse(info.xhr.response)
         img.value = `http://localhost:3030/grupos/download/${json.id}`
         imgId.value = json.id
         modalImg.value = false
-        console.log(info)
     }
     const editarGrupo = async () => {
+        console.log('edit', grupo.value)
         try{
             await editGrupo(grupo.value.id, {
                 id_imagem: imgId.value,
                 nome: nome.value,
                 descricao: descricao.value,
             })
-            await refreshGrupos()
             $q.notify({
                 message: 'Grupo alterado com sucesso',
                 color: 'positive'
             })
         } catch (e) {
+            console.error(e)
             $q.notify({
                 color: 'negative',
-                message: 'Erro ao criar grupo',
+                message: 'Erro ao alterar grupo',
                 position: 'top'
             })
         }

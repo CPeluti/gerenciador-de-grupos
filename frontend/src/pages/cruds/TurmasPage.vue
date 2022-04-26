@@ -17,7 +17,7 @@
                             label="Código"
                             placeholder="Digite o código da turma"
                         />
-                        <q-input 
+                        <q-input
                             class="col-12"
                             outlined
                             v-model="semestre"
@@ -26,7 +26,7 @@
                             label="Semestre"
                             placeholder="Digite o semestre da turma"
                         />
-                        <q-input 
+                        <q-input
                             class="col-12"
                             outlined
                             v-model="horario"
@@ -35,7 +35,7 @@
                             label="Horario"
                             placeholder="Digite o horario da matéria"
                         />
-                        <q-select 
+                        <q-select
                             class="col-12"
                             outlined
                             v-model="materia"
@@ -71,11 +71,11 @@
                         />
                     </q-form>
                 </q-card-section>
-                
+
             </q-card>
         </div>
         <div class="col-5" >
-            <tabela 
+            <tabela
                 :columns="columnsTabela"
                 :rows="turmas.value"
                 row-key="codigo"
@@ -85,13 +85,13 @@
             />
         </div>
     </div>
-    
+
 </template>
 <script lang="ts" setup>
-    import tabela from "components/Table.vue"
+    import tabela from 'components/Table.vue'
     import {ref, reactive, onBeforeMount, watch} from 'vue'
     import {useQuasar} from 'quasar'
-    import axios from 'axios' 
+    import axios from 'axios'
     import { Turma, Materia } from 'components/models';
     // Data
     const form = ref(null)
@@ -103,9 +103,9 @@
     const materias = ref()
     const editMode = ref(false)
     const codigoEdit = ref()
-    
+
     const columnsTabela = ref([
-        {name: 'codigo', align:'center', label: 'Código', field: 'codigo'}, 
+        {name: 'codigo', align:'center', label: 'Código', field: 'codigo'},
         {name: 'semestre', align: 'center', label: 'Semestre', field: 'semestre'},
         {name: 'horario', align:'center', label: 'Horario', field: 'horario'},
         {name: 'codigo_materia', align:'center', label: 'Materia', field: 'codigo_materia'},
@@ -169,7 +169,7 @@
                     label: `${mat.nome} (${mat.codigo})`,
                     value: mat.codigo
                 }
-            })            
+            })
         } catch (error) {
             $q.notify({
                 color: 'negative',
@@ -192,8 +192,7 @@
                 message: 'Erro ao buscar as turmas'
             })
         }
-        
-        console.log(turmas)
+
     }
     const editTurma = async () => {
         try{
@@ -204,12 +203,11 @@
                 codigo_materia: materia.value,
             })
             editMode.value = false
-            console.log(res)
             buscaTurmas()
         } catch (e) {
             console.error(e)
         }
-        
+
     }
     const excludeTurma =  (row: Turma) => {
         $q.dialog({
@@ -225,8 +223,8 @@
                 console.error(e)
             }
         })
-        
-        
+
+
     }
     const changeToEditMode = (row: Turma) => {
         editMode.value = !editMode.value
@@ -239,7 +237,6 @@
         //     codigo: row.codigo,
         //     nome: row.nome
         // })
-        console.log(editMode.value)
     }
     // Life cycle hooks
     onBeforeMount(async () => {

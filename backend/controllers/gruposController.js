@@ -45,7 +45,6 @@ const gruposFind = async (req, res) => {
 
 const gruposPatch = async (req, res) => {
   const dados = req.fields
-  console.log(dados)
   if(dados.length > 1) {
     res.status(500).json({message:"Somente um registro por vez"})
   }
@@ -73,14 +72,12 @@ const gruposDelete = async (req, res) => {
 
 const gruposFindByParticipante = async (req, res) => {
   const matricula = req.params.id
-  console.log(matricula)
   try {
     const grupos = await dao.findByParticipante(matricula)
-    for (grupo of grupos) {
-      let interesses = await daoRelacionamentoGruposInteresses.findInteresseBy({id_grupo: grupo.id_grupo}) 
+    for (const grupo of grupos) {
+      let interesses = await daoRelacionamentoGruposInteresses.findInteresseBy({id_grupo: grupo.id_grupo})
       grupo.interesses = interesses
     }
-
     res.status(200).json(grupos)
   } catch (e) {
     res.status(500).send({message: "Falha ao buscar grupos", error: e})
@@ -103,7 +100,26 @@ const gruposFindAll = async (req, res) => {
     console.error(e)
   }
 }
-
+const findPedidoByParticipante =  async (req, res) => {
+  const matricula = req.params.id
+  try {
+    const pedidos = await daoPedidos.findByMatricula(matricula)
+    res.status(200).json(pedidos)
+  } catch (e){
+    console.error(e)
+    res.status(500).send({message: "Falha ao buscar pedidos", error: e})
+  }
+}
+const findPedidoByGrupo =  async (req, res) => {
+  const grupo = req.params.id
+  try {
+    const pedidos = await daoPedidos.findBy({id_grupo: grupo, aceito: null})
+    res.status(200).json(pedidos)
+  } catch (e){
+    console.error(e)
+    res.status(500).send({message: "Falha ao buscar pedidos", error: e})
+  }
+}
 const criaPedido = async (req, res) => {
   // req.fields = {id_usuario, id_grupo}
   const {pedido} = req.fields
@@ -121,7 +137,7 @@ const respondePedido = async (req, res) => {
   // req.fields = {resposta: boolean}
   // req.params = {id: id_pedido}
   try{
-    const pedido = await daoPedidos.update({id: req.params.id}, {aceito: req.fields.resposta, recusado: !req.fields.resposta})
+    const pedido = await daoPedidos.update({id: req.params.id}, {aceito: req.fields.resposta})
     if(req.fields.resposta) {
       const id_usuario = pedido[0].id_usuario
       const id_grupo = pedido[0].id_grupo
@@ -139,10 +155,8 @@ const respondePedido = async (req, res) => {
 
 const imgUpload = async (req, res) => {
   const {path, name, type} = req.files[Object.keys(req.files)]
-  console.log(path, name, type)
   const arquivo = await fs.readFile(path, 'base64', async (err, img)=>{
     try {
-      console.log(img)
       const resultado = await daoArquivos.create({arquivo: img, nome: name, tipo: type})
       res.status(201).send({message: "Arquivo enviado com sucesso", id: resultado.id})
     } catch (e) {
@@ -165,6 +179,10 @@ const imgDownload = async (req, res) => {
   }
 }
 
+const finalizaGrupo = async (req, res) => {
+
+}
+
 
 module.exports = {
   gruposCreate,
@@ -173,8 +191,11 @@ module.exports = {
   gruposDelete,
   gruposFindAll,
   gruposFindByParticipante,
+  findPedidoByParticipante,
+  findPedidoByGrupo,
   criaPedido,
   respondePedido,
   imgUpload,
-  imgDownload
+  imgDownload,
+  finalizaGrupo
 }

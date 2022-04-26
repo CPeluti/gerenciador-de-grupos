@@ -11,8 +11,11 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import {ref, onMounted, watch} from 'vue'
   import { useRouter } from 'vue-router'
+  import { gruposStore } from 'stores/grupos-store';
+  const store = gruposStore();
+
+  const {setGrupoAtual} = store
   // Data
   const router = useRouter()
 

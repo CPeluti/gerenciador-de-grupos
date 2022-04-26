@@ -1,9 +1,9 @@
 const {pool} = require('../postgres')
 const format = require('pg-format')
 
-class DaoMaterias {
+class DaoPermissoes {
   constructor () {
-    this.tabela = 'materias'
+    this.tabela = 'permissoes'
     this.bd = pool
   }
   createTable() {
@@ -12,12 +12,8 @@ class DaoMaterias {
         //TODO: arrumar tamanho do codigo
         const { rows } = await this.bd.query(`
           CREATE TABLE IF NOT EXISTS ${process.env.DB_SCHEMA}.${this.tabela} (
-            codigo VARCHAR(15) PRIMARY KEY,
-            nome VARCHAR(255) NOT NULL,
-            id_departamento INT,
-            CONSTRAINT fk_id_departamento
-              FOREIGN KEY(id_departamento)
-                REFERENCES ${process.env.DB_SCHEMA}.departamentos(id) ON DELETE CASCADE
+            id SERIAL PRIMARY KEY,
+            nome VARCHAR(255) NOT NULL
           );
         `)
         resolve(rows[0])
@@ -26,15 +22,15 @@ class DaoMaterias {
       }
     })
   }
-  create (materia) {
+  create (permissao) {
     return new Promise( async (resolve, reject) => {
       try {
         const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (codigo, nome)
-          VALUES ($1, $2)
+          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (nome)
+          VALUES ($1)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [materia.codigo, materia.nome])
+        `, [permissao.codigo, permissao.nome])
         resolve(rows[0])
       } catch (error) {
         reject(error)
@@ -121,4 +117,4 @@ class DaoMaterias {
     })
   }
 }
-module.exports = {DaoMaterias}
+module.exports = {DaoPermissoes}
