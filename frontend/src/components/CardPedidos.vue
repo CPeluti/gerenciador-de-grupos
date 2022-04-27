@@ -7,6 +7,7 @@
         </span>
         <q-separator size=".13em"/>
         <span>{{props.pedido.matricula_participante}}</span>
+        <q-rating v-model="media" readonly :max="5" size="32px" />
       </div>
     </div>
     <div class="cursor-pointer entrar bg-positive shadow-2 flex justify-center items-center">
@@ -30,7 +31,7 @@
   const store = gruposStore();
   const {acceptInvite, rejectInvite} = store;
   const $q = useQuasar()
-
+  const media = ref(props.pedido.media)
   const props = defineProps({
     pedido: {
       type: Object,

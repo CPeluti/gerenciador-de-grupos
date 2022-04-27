@@ -64,7 +64,7 @@
                             outlined
                             rounded
                             filled
-                            @click="confirmarFinalizacao"
+                            @click="confirm = true"
                         />
                     </q-form>
 
@@ -91,6 +91,19 @@
                 </q-card-section>
             </q-card>
         </q-dialog>
+        <q-dialog v-model="confirm" persistent>
+          <q-card>
+            <q-card-section class="row items-center">
+              <q-avatar icon="nofity" color="negative" text-color="white" />
+              <span class="q-ml-sm">Você tem certeza que quer finalizar o grupo?</span>
+            </q-card-section>
+
+            <q-card-actions align="right">
+              <q-btn flat label="Cancel" color="primary" v-close-popup />
+              <q-btn flat label="Finalizar" @click="finalizarGrupo" color="negative" v-close-popup />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
     </div>
 
 </template>
@@ -98,13 +111,13 @@
     import {ref, watch} from 'vue'
     import {useQuasar} from 'quasar'
     import axios from 'axios'
-    import { useRoute } from 'vue-router';
+    import { useRouter } from 'vue-router';
     import { gruposStore } from 'stores/grupos-store';
     import {storeToRefs} from 'pinia'
     import { Interesse } from './models';
     const $q = useQuasar()
     const store = gruposStore();
-    const router = useRoute()
+    const router = useRouter()
 
     const {editGrupo, filtraMateriasJaExistentes, refreshGrupos} = store
     const {grupo} = storeToRefs(store);
@@ -113,6 +126,7 @@
     const turma = ref()
     const nome = ref()
     const descricao = ref()
+    const confirm = ref(false)
     const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
     const imgId = ref()
     const img = ref('')
@@ -175,6 +189,17 @@
             })
         }
 
+    }
+    const finalizarGrupo = async () => {
+      try{
+        await axios.delete(`http://localhost:3030/grupos/${grupo.value.id}`)
+        router.push('/')
+      } catch (e) {
+        $q.notify({
+          message:'Falha ao finalizar grupo.',
+          color: 'negative'
+        })
+      }
     }
     const limpaCampos = () => {
         nome.value = ''

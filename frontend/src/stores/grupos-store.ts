@@ -104,6 +104,7 @@ export const gruposStore = defineStore('grupos', {
     },
     async buscaPedidosGrupo(id_grupo) {
       const {data} = await axios.get(`http://localhost:3030/grupos/pedido/recebidos/${id_grupo}`)
+      console.log('teste123123',data)
       return data
     },
     async acceptInvite(id_pedido){
