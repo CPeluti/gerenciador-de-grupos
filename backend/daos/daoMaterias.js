@@ -13,7 +13,11 @@ class DaoMaterias {
         const { rows } = await this.bd.query(`
           CREATE TABLE IF NOT EXISTS ${process.env.DB_SCHEMA}.${this.tabela} (
             codigo VARCHAR(15) PRIMARY KEY,
-            nome VARCHAR(255) NOT NULL
+            nome VARCHAR(255) NOT NULL,
+            id_departamento INT,
+            CONSTRAINT fk_id_departamento
+              FOREIGN KEY(id_departamento)
+                REFERENCES ${process.env.DB_SCHEMA}.departamentos(id) ON DELETE CASCADE
           );
         `)
         resolve(rows[0])

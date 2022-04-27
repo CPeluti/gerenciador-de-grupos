@@ -120,7 +120,6 @@ async function getMembersInfo(page){
 	// Wait for page to load
 	await page.waitForSelector('.rich-panelbar-content')
 	await clickParticipantes(page)
-
 	// Get participantes
 	await page.waitForSelector('.participantes')
 	const participantes = await page.evaluate(()=>{

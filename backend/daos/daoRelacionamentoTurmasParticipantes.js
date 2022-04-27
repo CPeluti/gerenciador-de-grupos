@@ -17,10 +17,10 @@ class DaoRelacionamentoTurmasParticipantes {
             matricula_participante VARCHAR(15) NOT NULL,
             CONSTRAINT fk_id_turma
               FOREIGN KEY(id_turma)
-                REFERENCES ${process.env.DB_SCHEMA}.turmas(id),
+                REFERENCES ${process.env.DB_SCHEMA}.turmas(id) ON DELETE CASCADE,
             CONSTRAINT fk_matricula_participante
               FOREIGN KEY(matricula_participante)
-                REFERENCES ${process.env.DB_SCHEMA}.participantes(matricula)
+                REFERENCES ${process.env.DB_SCHEMA}.participantes(matricula) ON DELETE CASCADE
           );
         `)
         resolve(rows[0])

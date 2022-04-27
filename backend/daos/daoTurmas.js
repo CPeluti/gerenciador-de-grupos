@@ -20,7 +20,7 @@ class DaoTurmas {
             codigo_materia varchar(15) NOT NULL,
             CONSTRAINT fk_codigo_materia
               FOREIGN KEY(codigo_materia)
-                REFERENCES ${process.env.DB_SCHEMA}.materias(codigo)
+                REFERENCES ${process.env.DB_SCHEMA}.materias(codigo) ON DELETE CASCADE
           );
         `)
         resolve(rows[0])
@@ -71,6 +71,18 @@ class DaoTurmas {
       }
     })
   }
+  findByParticipante (filtro) {
+    return new Promise( async (resolve, reject) => {
+      let binds = []
+      let contador = 1
+      try {
+        const { rows } = await this.bd.query(`SELECT tabela.*, m.nome FROM ${process.env.DB_SCHEMA}.${this.tabela} tabela INNER JOIN ${process.env.DB_SCHEMA}.materias AS m ON m.codigo = tabela.codigo_materia WHERE id in (SELECT id_turma FROM ${process.env.DB_SCHEMA}.turmas_participantes WHERE matricula_participante=$1)`, [filtro.id_usuario])
+        resolve(rows)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
   update (filtro, dados) {
     return new Promise( async (resolve, reject) => {
       if(!filtro){
@@ -99,6 +111,7 @@ class DaoTurmas {
         contador++
         return condicional
       })
+
       try {
         const { rows } = await this.bd.query(`
           UPDATE ${process.env.DB_SCHEMA}.${this.tabela}
@@ -120,7 +133,7 @@ class DaoTurmas {
       try {
         const { rows } = await this.bd.query(`
          DELETE FROM ${process.env.DB_SCHEMA}.${this.tabela}
-         WHERE CODIGO = $1
+         WHERE ID = $1
         `, [id])
         resolve(rows[0])
       } catch (error) {

@@ -8,6 +8,8 @@ import {
 
 import routes from './routes';
 
+import { credentialsStore } from "src/stores/credentials-store"
+
 /*
  * If not building with SSR mode, you can
  * directly export the Router instantiation;
@@ -31,6 +33,13 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
-
+  Router.beforeEach(async (to) => {
+    const credentials = credentialsStore();
+    const isAuthenticated = await credentials.isAuthenticated();
+    console.log(isAuthenticated);
+    if (!isAuthenticated && to.name !== "login") {
+      return { name: "login" };
+    }
+  });
   return Router;
 });

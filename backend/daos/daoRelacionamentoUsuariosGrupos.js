@@ -16,10 +16,10 @@ class DaoRelacionamentoUsuariosGrupos {
             id_grupo INT NOT NULL,
             CONSTRAINT fk_id_usuario
               FOREIGN KEY(id_usuario)
-                REFERENCES ${process.env.DB_SCHEMA}.usuarios(id),
+                REFERENCES ${process.env.DB_SCHEMA}.usuarios(id) ON DELETE CASCADE,
             CONSTRAINT fk_id_grupo
               FOREIGN KEY(id_grupo)
-                REFERENCES ${process.env.DB_SCHEMA}.grupos(id)
+                REFERENCES ${process.env.DB_SCHEMA}.grupos(id) ON DELETE CASCADE
           );
         `)
         resolve(rows[0])
@@ -100,6 +100,16 @@ class DaoRelacionamentoUsuariosGrupos {
           WHERE ${bindsFiltros.join(' AND ')}
           RETURNING *;
         `, [...Object.values(dados), ...Object.values(filtro)])
+        resolve(rows)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+  findUserByGrupo (grupo) {
+    return new Promise( async (resolve, reject) => {
+      try {
+        const { rows } = await this.bd.query(`SELECT u.id, u.usuario, u.matricula_participante FROM ${process.env.DB_SCHEMA}.usuarios as u INNER JOIN ${process.env.DB_SCHEMA}.usuarios_grupos AS ug ON ug.id_usuario = u.id WHERE ug.id_grupo = $1;`, [grupo])
         resolve(rows)
       } catch (error) {
         reject(error)
