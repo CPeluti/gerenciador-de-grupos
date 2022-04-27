@@ -9,8 +9,6 @@ const
   daoParticipantes = new DaoParticipantes(),
   {DaoUsuarios} = require('./daos/daoUsuarios'),
   daoUsuarios = new DaoUsuarios(),
-  {DaoMensagens} = require('./daos/daoMensagens'),
-  daoMensagens = new DaoMensagens(),
   {DaoGrupos} = require('./daos/daoGrupos'),
   daoGrupos = new DaoGrupos(),
   {DaoArquivos} = require('./daos/daoArquivos'),
@@ -32,7 +30,9 @@ const
   {DaoPermissoes} = require('./daos/daoPermissoes'),
   daoPermissoes = new DaoPermissoes(),
   {DaoAvaliacoes} = require('./daos/daoAvaliacoes'),
-  daoAvaliacoes = new DaoAvaliacoes()
+  daoAvaliacoes = new DaoAvaliacoes(),
+  {DaoAvaliacoesPendentes} = require('./daos/daoAvaliacoesPendentes'),
+  daoAvaliacoesPendentes = new DaoAvaliacoesPendentes()
 
 // Routes
 const
@@ -70,7 +70,6 @@ async function CreateTables(){
   await daoUsuarios.createTable()
   await daoArquivos.createTable()
   await daoGrupos.createTable()
-  await daoMensagens.createTable()
   await daoRelacionamentoTurmasParticipantes.createTable()
   await daoRelacionamentoUsuariosGrupos.createTable()
   await daoInteresses.createTable()
@@ -79,6 +78,7 @@ async function CreateTables(){
   await daoPermissoes.createTable()
   await daoRelacionamentoPermissoesUsuarios.createTable()
   await daoAvaliacoes.createTable()
+  await daoAvaliacoesPendentes.createTable()
 }
 
 CreateTables()

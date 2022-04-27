@@ -5,6 +5,8 @@ const {DaoRelacionamentoGruposInteresses} = require('../daos/daoRelacionamentoGr
 const {DaoUsuarios} = require('../daos/daoUsuarios')
 const fs = require('fs')
 const { DaoArquivos } = require('../daos/daoArquivos')
+const { DaoAvaliacoesPendentes } = require('../daos/daoAvaliacoesPendentes')
+const { DaoAvaliacoes } = require('../daos/daoAvaliacoes')
 
 const dao = new DaoGrupos()
 const daoUsuarios = new DaoUsuarios()
@@ -12,7 +14,8 @@ const daoPedidos = new DaoPedidos()
 const daoRelacionamentoUsuariosGrupos = new DaoRelacionamentoUsuariosGrupos()
 const daoRelacionamentoGruposInteresses = new DaoRelacionamentoGruposInteresses()
 const daoArquivos = new DaoArquivos()
-
+const daoAvaliacoes = new DaoAvaliacoes()
+const daoAvaliacoesPendentes = new DaoAvaliacoesPendentes()
 const gruposCreate = async (req, res) => {
   const {grupo, interesses} = req.fields
   try {
@@ -56,18 +59,6 @@ const gruposPatch = async (req, res) => {
     console.error(error)
     res.status(500).json({message:"Falha ao atualizar registro", error: error})
   }
-}
-
-const gruposDelete = async (req, res) => {
-    const id = req.params.id
-    try {
-        await dao.update({id: id}, {ativo: false})
-        // TODO: Adicionar logica para exibir avaliação
-        res.status(200).send("Grupo finalizado com sucesso")
-    } catch (e) {
-        res.status(500).send({message: "Falha ao finalizar grupo", error: e})
-        console.error(e)
-    }
 }
 
 const gruposFindByParticipante = async (req, res) => {
@@ -114,6 +105,14 @@ const findPedidoByGrupo =  async (req, res) => {
   const grupo = req.params.id
   try {
     const pedidos = await daoPedidos.findBy({id_grupo: grupo, aceito: null})
+    for(pedido of pedidos) {
+      const avaliacoes = await daoAvaliacoes.findBy({id_usuario: pedido.id_usuario})
+      if(avaliacoes.length === 0) {
+        pedido.media = 5
+      } else {
+        pedido.media = avaliacoes.reduce((total, avaliacao) => total + avaliacao.avaliacao, 0) / avaliacoes.length
+      }
+    }
     res.status(200).json(pedidos)
   } catch (e){
     console.error(e)
@@ -180,7 +179,24 @@ const imgDownload = async (req, res) => {
 }
 
 const finalizaGrupo = async (req, res) => {
-
+  const id = req.params.id
+  try {
+    await dao.update({id: id}, {ativo: false})
+    const grupos = await daoRelacionamentoUsuariosGrupos.findBy({id_grupo: id})
+    console.log(grupos)
+    const participantes = grupos.map(grupo => grupo.id_usuario)
+    for(avaliador of participantes) {
+      for(usuario of participantes) {
+        if(avaliador !== usuario){
+          await daoAvaliacoesPendentes.create({id_avaliador: avaliador, id_usuario: usuario, id_grupo: id})
+        }
+      }
+    }
+    res.status(200).send("Grupo finalizado com sucesso")
+  } catch (e) {
+    res.status(500).send({message: "Falha ao finalizar grupo", error: e})
+    console.error(e)
+  }
 }
 
 
@@ -188,7 +204,6 @@ module.exports = {
   gruposCreate,
   gruposFind,
   gruposPatch,
-  gruposDelete,
   gruposFindAll,
   gruposFindByParticipante,
   findPedidoByParticipante,

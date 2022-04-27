@@ -34,11 +34,11 @@ class DaoAvaliacoes {
     return new Promise( async (resolve, reject) => {
       try {
         const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (id_usuario, id_grupo)
-          VALUES ($1, $2)
+          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (id_usuario, id_grupo, avaliacao)
+          VALUES ($1, $2, $3)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [avaliacao.id_usuario, avaliacao.id_grupo])
+        `, [avaliacao.id_usuario, avaliacao.id_grupo, avaliacao.avaliacao])
         resolve(rows[0])
       } catch (error) {
         reject(error)
