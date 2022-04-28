@@ -6,11 +6,6 @@
         :rows="props.rows"
         row-key="props.rowKey"
     >
-        <template v-slot:top>
-            <div class="float-right">
-                <q-input label="Pesquisa" v-model="pesquisa"></q-input>
-            </div>
-        </template>
         <template v-slot:body-cell-editar="props">
                 <q-td key="editar">
                     <q-btn
@@ -45,7 +40,7 @@
         rows: Array,
         rowKey: String,
     })
-    
+
     const edit = (row: Materia|Turma) => {
         emit('edit', row)
     }
@@ -56,7 +51,7 @@
     const pesquisa = ref(null)
     // watch(pesquisa, (string)=>{
     //     const valoresFiltrados = props.rows?.filter(row => {
-    //         return Object.values(row).some(value => value.includes(string))    
+    //         return Object.values(row).some(value => value.includes(string))
     //     })
     // })
 

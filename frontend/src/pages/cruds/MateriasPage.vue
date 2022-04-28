@@ -1,4 +1,6 @@
 <template>
+  <q-card class="window-height">
+    <BarraNavegacao class="float-left" />
     <div class="row q-pa-sm q-gutter-md">
         <div class="col-5">
             <q-card class="col-sm-6 col-md-4 q-pa-md" rounded>
@@ -26,6 +28,17 @@
                             rounded
                             label="Nome"
                             placeholder="Digite o nome da materia"
+                        />
+                        <q-select
+                            class="col-12"
+                            outlined
+                            v-model="departamento"
+                            :options="departamentos"
+                            map-options
+                            emit-value
+                            rounded
+                            label="Matéria"
+                            placeholder="Escolha a matéria da turma"
                         />
                         <q-btn
                             class="col-12"
@@ -67,9 +80,10 @@
             />
         </div>
     </div>
-
+  </q-card>
 </template>
 <script lang="ts" setup>
+    import BarraNavegacao from 'components/BarraNavegacao.vue'
     import tabela from 'components/Table.vue'
     import {ref, reactive, onBeforeMount, watch} from 'vue'
     import {useQuasar} from 'quasar'
@@ -82,6 +96,8 @@
     const nome = ref()
     const editMode = ref(false)
     const codigoEdit = ref()
+    const departamento = ref()
+    const departamentos = ref([])
 
     const columnsTabela = ref([
         {name: 'codigo', align:'center', label: 'Código', field: 'codigo'},
@@ -110,7 +126,8 @@
                 const response = await axios.post('http://localhost:3030/materias', {
                     materias: [{
                         codigo: codigo.value,
-                        nome: nome.value
+                        nome: nome.value,
+                        id_departamento: departamento.value
                     }]
                 })
                 materias.value.push(response.data.materias[0])
@@ -190,7 +207,10 @@
         // })
     }
     // Life cycle hooks
-    onBeforeMount(() => {
-        buscaMaterias()
+    onBeforeMount(async () => {
+        await buscaMaterias()
+        const {data} = await axios.get('http://localhost:3030/departamentos')
+        departamentos.value = data.map(option => ({value: option.id, label: option.nome}))
+        console.log('departamentos', data)
     })
 </script>

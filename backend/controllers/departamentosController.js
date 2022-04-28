@@ -2,6 +2,7 @@ const {DaoDepartamentos} = require('../daos/daoDepartamentos')
 const dao = new DaoDepartamentos()
 
 const departamentosCreate = async (req, res) => {
+  console.log(req.fields)
   const departamentos = req.fields.departamentos
   let departamentosCriadas = []
   for (const element of departamentos) {
@@ -32,7 +33,7 @@ const departamentosPatch = async (req, res) => {
   if(dados.length > 1) {
     res.status(500).json({message:"Somente um registro por vez"})
   }
-  const filtro = {codigo: req.params.id}
+  const filtro = {id: req.params.id}
   try{
     const departamentos = await dao.update(filtro, dados)
     res.status(200).json(departamentos)

@@ -30,7 +30,7 @@ class DaoDepartamentos {
           VALUES ($1)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [departamento.codigo, departamento.nome])
+        `, [departamento.nome])
         resolve(rows[0])
       } catch (error) {
         reject(error)
@@ -108,7 +108,7 @@ class DaoDepartamentos {
       try {
         const { rows } = await this.bd.query(`
          DELETE FROM ${process.env.DB_SCHEMA}.${this.tabela}
-         WHERE CODIGO = $1
+         WHERE id = $1
         `, [id])
         resolve(rows[0])
       } catch (error) {

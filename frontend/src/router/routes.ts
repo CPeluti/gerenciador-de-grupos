@@ -14,6 +14,30 @@ const routes: RouteRecordRaw[] = [
     // children: [{ path: '', component: () => materiasPage}],
   },
   {
+    path: '/crudMaterias',
+    name: 'crudMaterias',
+    component: () => import('pages/cruds/MateriasPage.vue'),
+    // children: [{ path: '', component: () => materiasPage}],
+  },
+  {
+    path: '/crudDepartamentos',
+    name: 'crudDepartamentos',
+    component: () => import('pages/cruds/DepartamentosPage.vue'),
+    // children: [{ path: '', component: () => materiasPage}],
+  },
+  {
+    path: '/crudTurmas',
+    name: 'crudTurmas',
+    component: () => import('pages/cruds/TurmasPage.vue'),
+    // children: [{ path: '', component: () => materiasPage}],
+  },
+  {
+    path: '/crudParticipantes',
+    name: 'crudParticipantes',
+    component: () => import('pages/cruds/ParticipantesPage.vue'),
+    // children: [{ path: '', component: () => materiasPage}],
+  },
+  {
     path: '/grupo/:id',
     name: 'grupo',
     component: () => import('pages/GroupPage.vue'),

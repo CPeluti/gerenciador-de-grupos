@@ -8,7 +8,26 @@
         <div v-for="grupo in meusGrupos" :key="grupo.id">
           <Grupo :grupo="grupo"/>
         </div>
-          <CriarGrupo/>
+        <div class="flex column items-center justify-center">
+          <CriarGrupo class="q-mb-md"/>
+          <div class="q-mb-md">
+            <q-btn @click="router.push('/crudMaterias')" class="grupo" color="info" icon="home"/>
+            <q-tooltip anchor="center right" self="center left"><strong class="tooltip">CRUD Materias</strong></q-tooltip>
+          </div>
+          <div class="q-mb-md">
+            <q-btn  @click="router.push('/crudDepartamentos')" class="grupo" color="info" icon="home"/>
+            <q-tooltip anchor="center right" self="center left"><strong class="tooltip">CRUD Departamentos</strong></q-tooltip>
+          </div>
+          <div class="q-mb-md">
+            <q-btn @click="router.push('/crudTurmas')" class="grupo" color="info" icon="home"/>
+            <q-tooltip anchor="center right" self="center left"><strong class="tooltip">CRUD Turmas</strong></q-tooltip>
+          </div>
+          <div>
+            <q-btn @click="router.push('/crudParticipantes')" class="grupo" color="info" icon="home"/>
+            <q-tooltip anchor="center right" self="center left"><strong class="tooltip">CRUD Participantes</strong></q-tooltip>
+          </div>
+        </div>
+
         </div>
     </div>
 </template>

@@ -30,11 +30,11 @@ class DaoMaterias {
     return new Promise( async (resolve, reject) => {
       try {
         const { rows } = await this.bd.query(`
-          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (codigo, nome)
-          VALUES ($1, $2)
+          INSERT INTO ${process.env.DB_SCHEMA}.${this.tabela} (codigo, nome, id_departamento)
+          VALUES ($1, $2, $3)
           ON CONFLICT DO NOTHING
           RETURNING *;
-        `, [materia.codigo, materia.nome])
+        `, [materia.codigo, materia.nome, materia.id_departamento])
         resolve(rows[0])
       } catch (error) {
         reject(error)
@@ -56,7 +56,7 @@ class DaoMaterias {
         return condicional
       })
       try {
-        const { rows } = await this.bd.query(`SELECT * FROM ${process.env.DB_SCHEMA}.${this.tabela} ${binds.length? "WHERE" : ""} ${binds.join(' AND ')};`, [...Object.values(filtros)])
+        const { rows } = await this.bd.query(`SELECT m.*, d.nome as departamento FROM ${process.env.DB_SCHEMA}.${this.tabela} AS m LEFT JOIN ${process.env.DB_SCHEMA}.departamentos AS d on d.id = m.id_departamento ${binds.length? "WHERE" : ""} ${binds.join(' AND ')};`, [...Object.values(filtros)])
         resolve(rows)
       } catch (error) {
         reject(error)

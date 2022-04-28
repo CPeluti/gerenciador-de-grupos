@@ -1,4 +1,6 @@
 <template>
+  <q-card class="window-height">
+    <BarraNavegacao class="float-left" />
     <div class="row q-pa-sm q-gutter-md">
         <div class="col-5">
             <q-card class="col-sm-6 col-md-4 q-pa-md" rounded>
@@ -85,9 +87,11 @@
             />
         </div>
     </div>
+  </q-card>
 
 </template>
 <script lang="ts" setup>
+    import BarraNavegacao from 'components/BarraNavegacao.vue'
     import tabela from 'components/Table.vue'
     import {ref, reactive, onBeforeMount, watch} from 'vue'
     import {useQuasar} from 'quasar'
