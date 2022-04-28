@@ -10,19 +10,19 @@
         </div>
         <div class="flex column items-center justify-center">
           <CriarGrupo class="q-mb-md"/>
-          <div class="q-mb-md">
+          <div class="q-mb-md" v-if="admin">
             <q-btn @click="router.push('/crudMaterias')" class="grupo" color="info" icon="home"/>
             <q-tooltip anchor="center right" self="center left"><strong class="tooltip">CRUD Materias</strong></q-tooltip>
           </div>
-          <div class="q-mb-md">
-            <q-btn  @click="router.push('/crudDepartamentos')" class="grupo" color="info" icon="home"/>
+          <div class="q-mb-md" v-if="admin">
+            <q-btn @click="router.push('/crudDepartamentos')" class="grupo" color="info" icon="home"/>
             <q-tooltip anchor="center right" self="center left"><strong class="tooltip">CRUD Departamentos</strong></q-tooltip>
           </div>
-          <div class="q-mb-md">
+          <div class="q-mb-md" v-if="admin">
             <q-btn @click="router.push('/crudTurmas')" class="grupo" color="info" icon="home"/>
             <q-tooltip anchor="center right" self="center left"><strong class="tooltip">CRUD Turmas</strong></q-tooltip>
           </div>
-          <div>
+          <div v-if="admin">
             <q-btn @click="router.push('/crudParticipantes')" class="grupo" color="info" icon="home"/>
             <q-tooltip anchor="center right" self="center left"><strong class="tooltip">CRUD Participantes</strong></q-tooltip>
           </div>
@@ -37,13 +37,17 @@
   import CriarGrupo from 'components/CriarGrupo.vue';
   import { storeToRefs } from 'pinia'
   import { gruposStore } from 'stores/grupos-store';
-  import { onMounted } from 'vue';
+  import { onMounted, computed } from 'vue';
     import { useRouter } from 'vue-router'
 
   const router = useRouter()
   // Data
   const store = gruposStore();
   const {meusGrupos} = storeToRefs(store);
+  const admin = computed(()=>{
+    const permissoes = JSON.parse(sessionStorage.getItem('userInfo')).permissoes
+    return permissoes.includes(3)
+  })
   const { buscaMeusGrupos } = store;
   onMounted(async ()=>{
     await buscaMeusGrupos()

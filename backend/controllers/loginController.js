@@ -3,9 +3,11 @@ const crypto = require("crypto-js")
 const {DaoUsuarios} = require('../daos/daoUsuarios')
 const {DaoTurmas} = require('../daos/daoTurmas')
 const {DaoParticipantes} = require('../daos/daoParticipantes')
+const { DaoRelacionamentoPermissoesUsuarios } = require('../daos/daoRelacionamentoPermissoesUsuarios')
 const dao = new DaoUsuarios()
 const daoTurmas = new DaoTurmas()
 const daoParticipantes = new DaoParticipantes()
+const daoRelacionamentoPermissoesUsuarios = new DaoRelacionamentoPermissoesUsuarios()
 const login = async (req, res) => {
   const usuario = req.fields.usuario
   const senha = req.fields.senha
@@ -19,7 +21,7 @@ const login = async (req, res) => {
 
       const minhasTurmas = await daoTurmas.findByParticipante({ id_usuario: resultado[0].matricula_participante })
       const participante = await daoParticipantes.findBy({ matricula: resultado[0].matricula_participante })
-
+      const permissoes = await daoRelacionamentoPermissoesUsuarios.findBy({ id_usuario: resultado[0].id })
       res.json({
         auth: true,
         token: token,
@@ -29,7 +31,8 @@ const login = async (req, res) => {
           nome: resultado[0].nome,
           email: resultado[0].email,
           usuario: resultado[0].usuario,
-          turmas: minhasTurmas
+          turmas: minhasTurmas,
+          permissoes: permissoes.map(p => p.id_permissao),
         }
       })
       return
