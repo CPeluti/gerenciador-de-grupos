@@ -3,7 +3,6 @@ const dao = new DaoParticipantes()
 
 const participantesCreate = async (req, res) => {
   const participantes = req.fields.participantes
-  (participantes)
   let participantesCriados = []
   for (const element of participantes) {
     try {
