@@ -191,6 +191,12 @@ INSERT INTO grupos.participantes (matricula,nome,email,ocupacao) VALUES
 	 ('170007561','Camila Frealdo Fraga','camilizx2021@gmail.com','dicente'),
 	 ('180144421','Lucas Resende Silveira Reis','180144421@aluno.unb.br','dicente'),
 	 ('190112794','Luiza de Araujo Nunes Gomes','luizangomes@outlook.com','dicente');
+INSERT INTO grupos.turmas_participantes (id_turma,matricula_participante) VALUES
+	 (1,'190084006'),
+	 (1,'190085312'),
+	 (1,'170007561'),
+	 (1,'180144421'),
+	 (1,'190112794');
 INSERT INTO grupos.usuarios (usuario,senha,matricula_participante) VALUES
 	 ('190084006','U2FsdGVkX196GpeJrdjGOXLkVi35zl3apVYwYMGM13Y=','190084006'),
 	 ('190085312','U2FsdGVkX18bJon5qUZVvEojiBSmoTUSTzrxVy56ZtE=','190085312'),
@@ -314,3 +320,30 @@ INSERT INTO grupos.avaliacoes (id_usuario,id_grupo,avaliacao) VALUES
 	 (2,2,4),
 	 (2,2,4),
 	 (2,2,4);
+
+CREATE FUNCTION gruposDoUsuario( in matricula text)
+returns table (descricao_grupo varchar, nome_grupo varchar, id_grupo int, matricula_criador varchar, codigo_turma varchar, semestre_turma varchar, nome_materia varchar, codigo_materia varchar, id_imagem int) AS $$
+BEGIN
+    RETURN QUERY SELECT grupos.grupos.descricao, grupos.grupos.nome, grupos.grupos.id, u.matricula_participante, t.codigo, t.semestre, m.nome, m.codigo, grupos.grupos.id_imagem FROM grupos.grupos
+    inner join grupos.usuarios as u on u.id = grupos.grupos.criado_por 
+    inner join grupos.turmas as t on t.id = grupos.grupos.turma_id
+    inner join grupos.materias as m on m.codigo = t.codigo_materia 
+ 	WHERE grupos.grupos.id in (
+	 	select ug.id_grupo from grupos.usuarios_grupos as ug 
+	 	inner join grupos.usuarios as u on u.id = ug.id_usuario 
+	 	where u.matricula_participante = matricula
+ 	);
+END;
+
+CREATE VIEW allGroups AS
+SELECT g.*, 
+	t.codigo as codigo_turma, 
+	t.semestre as semestre_turma, 
+	t.horario as horario_turma, 
+	m.codigo as codigo_materia, 
+	m.nome as nome_materia 
+FROM grupos as g
+inner join turmas as t on t.id = g.turma_id
+inner join materias as m on m.codigo = t.codigo_materia
+where g.ativo = true;
+

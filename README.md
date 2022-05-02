@@ -1,50 +1,7 @@
 # gerenciador-de-grupos
 
-## Fluxo
-loga -> cria grupo -> aceita pedidos -> finaliza grupo -> avaliações
-loga -> pesquisa grupo -> envia pedido -> finaliza grupo -> avaliações
-
-
-## Documentação API
-### Grupos
-#### POST /grupos
-Create grupo
-```
-{
-	grupo: {
-    	"nome": "nome do grupo"
-        "criado_por": "id do criador do grupo"
-        "turma_id": "id da turma do grupo"
-    }
-}
-```
-#### GET /grupos
-Find grupo
-```
-localhost:3030/grupos?query
-```
-#### PATCH /grupos/:id
-Update grupo
-```
-{
-	grupo: {
-    	"nome": "nome do grupo"
-        "criado_por": "id do criador do grupo"
-        "turma_id": "id da turma do grupo"
-    }
-}
-```
-#### DELETE /grupos/:id
-Disable grupo
-#### POST /grupos/pedido
-Create pedido
-#### POST /grupos/pedido/:id
-Responde pedido
-
-
-
-
-
+## scripts para criação e use de views e procedures necessárias 
+```sql
 drop function gruposDoUsuario(TEXT);
 CREATE FUNCTION gruposDoUsuario( in matricula text)
 returns table (descricao_grupo varchar, nome_grupo varchar, id_grupo int, matricula_criador varchar, codigo_turma varchar, semestre_turma varchar, nome_materia varchar, codigo_materia varchar, id_imagem int) AS $$
@@ -62,11 +19,11 @@ BEGIN
 END;
 
 $$ LANGUAGE plpgsql;
+```
+> select * from gruposDoUsuario('190085312');
+> http://localhost:3030/grupos/participante/190085312
 
-select * from gruposDoUsuario('190085312');
-http://localhost:3030/grupos/participante/190085312
-
-
+```sql
 drop view allgroups;
 
 CREATE VIEW allGroups AS
@@ -80,7 +37,7 @@ FROM grupos as g
 inner join turmas as t on t.id = g.turma_id
 inner join materias as m on m.codigo = t.codigo_materia
 where g.ativo = true;
-
-select * from allgroups;
-http://localhost:3030/grupos/all
+```
+> select * from allgroups;
+> http://localhost:3030/grupos/all
 
